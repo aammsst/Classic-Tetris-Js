@@ -49,6 +49,18 @@ html{
     margin: auto;
 }
 
+.gameStart{
+    position: absolute;
+    z-index: 60;
+    display: block;
+    width: 200px;
+    height: 500px;
+    background-color: #000;
+    border: solid 3px #f98;
+    border-radius: 7px;
+    margin: auto;
+}
+
 .pauseTxt {
     display: block;
     margin-top: 100%;
@@ -57,11 +69,20 @@ html{
     text-align: center;
 }
 
+.startTxt {
+    display: block;
+    margin-top: 100%;
+    color: #ebf6f7;
+    height: fit-content;
+    text-align: center;
+    padding: auto;
+}
+
 .gameOv{
     position: absolute;
     z-index: 50;
     display: none;
-    width: 320px;
+    width: 200px;
     height: 500px;
     background-color: #000;
     border: solid 5px #ebf6f7;
@@ -147,6 +168,17 @@ html{
 
 #start-button{
     display: block;
+}
+
+#pause-button {
+    display: none;
+}
+
+#restart-button {
+    display: none;
+}
+
+.btn {
     margin: auto;
     padding: 0 10px;
     margin-top: 20px;
@@ -159,10 +191,10 @@ html{
     outline: none;
 }
 
-#start-button:hover{
+.btn:hover{
     background-color: #9aa;
 }
 
-#start-button:active{
+.btn:active{
     background-color: #47a;
 }

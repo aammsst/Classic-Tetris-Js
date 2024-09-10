@@ -212,10 +212,13 @@
 	</div>
 	<div class="conteiner">
 	    <div class="pause">
-		<h1 class="pauseTxt">-- Pause --</h1>
+		    <h1 class="pauseTxt">-- Pause --</h1>
+	    </div>
+	    <div class="gameStart">
+		    <h1 class="startTxt"></h1>
 	    </div>
 	    <div class="gameOv">
-		<h1 class="gameOvTxt">GAME OVER!</h1>
+		    <h1 class="gameOvTxt">GAME OVER!</h1>
 	    </div>
 	    <div class="grid">
 		<div></div>
@@ -480,7 +483,7 @@
 		<div class="taken"></div>
 	    </div>
 	    <div id="cont2">
-		<h3 id="next">Next Tetromino:</h3>
+		    <h3 id="next">Next Tetromino:</h3>
 		<div class="mini-grid">
 		    <div></div>
 		    <div></div>
@@ -501,12 +504,18 @@
 		</div>
 		<h2>Score: <span id="score">0</span></h2>
 		<h4>Lines: <span id="lines">0</span></h4>
+        <br>
+        <div class="buttons">
+	        <button id="start-button" type="button" class="btn">Start</button>
+	        <button id="pause-button" type="button" class="btn">Pause</button>
+	        <button id="restart-button" type="button" class="btn">Restart</button>
+        </div>
 	    </div>
 	</div>
 	<div class="darkBackG" hidden>
 	    <h3>This web app is not yet available for mobiles, sorry :(</h3>
 	</div>
-	<button id="start-button">Start / Pause</button>
+    <!-- <button id="start-button">Start / Pause</button> -->
 	<script src="https://aammsst.github.io/mainCode/build/darkLightMode.js"></script>
 	<script src="https://aammsst.github.io/mainCode/build/main.js"></script>
     </body>

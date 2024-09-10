@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "outFile": "tetris.js",
     "target": "es6",                                  
     "lib": ["es6", "dom"],
-    "module": "commonjs",
-    "resolveJsonModule": true,
+    "module": "amd",
+    "resolveJsonModule": false,
     "allowJs": true,
     "removeComments": true,
     "esModuleInterop": true,
