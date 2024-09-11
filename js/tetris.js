@@ -172,83 +172,64 @@ function gameOver() {
 }
 ;
 let moveStartX, moveEndX, moveStartY, moveEndY;
+function getX(e) {
+    let col = e.changedTouches[0].target;
+    let a = parseInt(col.getAttribute("col"));
+    mobileHMove(a);
+}
 function mobileMoveStart(e) {
     e.preventDefault();
     moveStartX = e.changedTouches[0].clientX;
     moveStartY = e.changedTouches[0].clientY;
-    return moveStartY;
 }
 ;
 function mobileMoveEnd(e) {
     e.preventDefault();
     moveEndX = e.changedTouches[0].clientX;
     moveEndY = e.changedTouches[0].clientY;
-    moveDetec(moveStartX, moveEndX, moveStartY, moveEndY);
+    let col = e.changedTouches[0].target;
+    let intCol = parseInt(col.getAttribute("col"));
+    moveDetec(moveStartX, moveEndX, moveStartY, moveEndY, intCol);
 }
 ;
-function moveDetec(sx, ex, sy, ey) {
-    if (sx - ex > 200) {
-        moveLeft();
-        moveLeft();
-        moveLeft();
-        moveLeft();
-    }
-    else if (sx - ex > 150) {
-        moveLeft();
-        moveLeft();
-        moveLeft();
-    }
-    else if (sx - ex > 100) {
-        moveLeft();
-        moveLeft();
-    }
-    else if (sx - ex > 30) {
-        moveLeft();
-    }
-    else if (sx - ex < -200) {
-        moveRight();
-        moveRight();
-        moveRight();
-        moveRight();
-    }
-    else if (sx - ex < -150) {
-        moveRight();
-        moveRight();
-        moveRight();
-    }
-    else if (sx - ex < -100) {
-        moveRight();
-        moveRight();
+function moveDetec(sx, ex, sy, ey, col) {
+    if (sx - ex > 30) {
+        rotateCW();
     }
     else if (sx - ex < -30) {
-        moveRight();
-    }
-    else if (ey - sy > 150) {
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-    }
-    else if (ey - sy > 100) {
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
+        rotateCCW();
     }
     else if (ey - sy > 30) {
-        moveDown();
-        moveDown();
-        moveDown();
-        moveDown();
+        softDrop();
     }
     else {
-        rotateCW();
+        mobileHMove(col);
+    }
+}
+function mobileHMove(col) {
+    let i = 0;
+    let actualPos = (initialPos + 1) % 10;
+    if (actualPos > col) {
+        if (col == 0) {
+            fullLeft();
+            return;
+        }
+        while (actualPos > col && i < 10) {
+            i++;
+            moveLeft();
+            actualPos = (initialPos + 1) % 10;
+        }
+    }
+    else {
+        if (col == 9) {
+            fullRight();
+            return;
+        }
+        while (actualPos < col && i < 10) {
+            i++;
+            moveRight();
+            actualPos = (initialPos + 1) % 10;
+        }
     }
 }
 let nextRandom;
@@ -343,10 +324,18 @@ function undraw() {
 }
 ;
 function moveDown() {
-    freeze();
-    undraw();
-    initialPos += width;
-    draw();
+    if (!freeze()) {
+        undraw();
+        initialPos += width;
+        draw();
+    }
+}
+function softDrop() {
+    while (!freeze()) {
+        undraw();
+        initialPos += width;
+        draw();
+    }
 }
 function freeze() {
     if (current.some(index => squares[initialPos + index + width].classList.contains('taken'))) {
@@ -360,34 +349,58 @@ function freeze() {
         draw();
         displayShape();
         gameOver();
+        return true;
     }
     ;
+    return false;
 }
 ;
 function moveLeft() {
     undraw();
     const leftEdge = current.some(index => (initialPos + index) % width === 0);
     if (!leftEdge)
-        initialPos -= 1;
-    if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
-        initialPos += 1;
-    }
-    ;
+        initialPos--;
+    if (current.some(index => squares[initialPos + index].classList.contains('taken')))
+        initialPos++;
     draw();
 }
 ;
+function fullLeft() {
+    undraw();
+    let leftEdge = current.some(index => (initialPos + index) % width === 0);
+    while (!leftEdge) {
+        initialPos--;
+        leftEdge = current.some(index => (initialPos + index) % width === 0);
+        if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
+            initialPos++;
+            break;
+        }
+    }
+    draw();
+}
 function moveRight() {
     undraw();
     const rightEdge = current.some(index => (initialPos + index) % width === width - 1);
     if (!rightEdge)
-        initialPos += 1;
-    if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
-        initialPos -= 1;
-    }
-    ;
+        initialPos++;
+    if (current.some(index => squares[initialPos + index].classList.contains('taken')))
+        initialPos--;
     draw();
 }
 ;
+function fullRight() {
+    undraw();
+    let rightEdge = current.some(index => (initialPos + index) % width === width - 1);
+    while (!rightEdge) {
+        initialPos++;
+        rightEdge = current.some(index => (initialPos + index) % width === width - 1);
+        if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
+            initialPos--;
+            break;
+        }
+    }
+    draw();
+}
 function rotateCW() {
     undraw();
     const rightEdge = current.some(index => (initialPos + index) % width === width - 1);

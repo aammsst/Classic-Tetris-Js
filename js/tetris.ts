@@ -105,14 +105,23 @@ function undraw() {
 
 // move down
 function moveDown() {
-    freeze();
-    undraw();
-    initialPos += width;
-    draw();
+    if (!freeze()) {
+        undraw();
+        initialPos += width;
+        draw();
+    }
+}
+
+function softDrop() {
+    while (!freeze()) {
+        undraw();
+        initialPos += width;
+        draw();
+    }
 }
 
 // freeze at the bottom and when touching other pieces
-function freeze() {
+function freeze(): boolean {
     if (current.some(index => squares[initialPos + index + width].classList.contains('taken'))) {
         current.forEach(index => squares[initialPos + index].classList.add('taken'));
         random = nextRandom;
@@ -124,30 +133,65 @@ function freeze() {
         draw();
         displayShape();
         gameOver();
+        return true;
     };
+    return false;
 };
 
 // move Left
 function moveLeft() {
     undraw();
     const leftEdge = current.some(index => (initialPos + index) % width === 0);
-    if (!leftEdge) initialPos -= 1;
-    if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
-        initialPos += 1;
-    };
+    if (!leftEdge)
+        initialPos--;
+
+    if (current.some(index => squares[initialPos + index].classList.contains('taken')))
+        initialPos++;
+
     draw();
 };
+
+function fullLeft() {
+    undraw();
+    let leftEdge = current.some(index => (initialPos + index) % width === 0);
+    while (!leftEdge) {
+        initialPos--;
+        leftEdge = current.some(index => (initialPos + index) % width === 0);
+        if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
+            initialPos++;
+            break;
+        }
+    }
+    draw();
+}
 
 // move Right
 function moveRight() {
     undraw();
+
     const rightEdge = current.some(index => (initialPos + index) % width === width - 1);
-    if (!rightEdge) initialPos += 1;
-    if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
-        initialPos -= 1;
-    };
+    if (!rightEdge)
+        initialPos++;
+
+    if (current.some(index => squares[initialPos + index].classList.contains('taken')))
+        initialPos--;
+
     draw();
 };
+
+function fullRight() {
+    undraw();
+    let rightEdge = current.some(index => (initialPos + index) % width === width - 1);
+    while (!rightEdge) {
+        initialPos++;
+        rightEdge = current.some(index => (initialPos + index) % width === width - 1);
+        if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
+            initialPos--;
+            break;
+        }
+    }
+    draw();
+}
 
 // rotate clockwise
 function rotateCW() {
