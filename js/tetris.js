@@ -1,8 +1,8 @@
 "use strict";
-let pause;
-let start;
-let gameOv;
+let gameMenu;
+let gMenuTxt;
 let grid;
+let miniGridMob;
 let squares;
 let lastLine;
 let lastScore;
@@ -12,6 +12,10 @@ let pauseBtn;
 let restartBtn;
 let scoreDisplay;
 let displaySq;
+let displaySqMob;
+let gridCont;
+let leftCont;
+let buttons;
 var gameStatus;
 (function (gameStatus) {
     gameStatus[gameStatus["Unstarted"] = 0] = "Unstarted";
@@ -25,96 +29,144 @@ let gameMan = {
     lines: 0,
 };
 document.addEventListener('DOMContentLoaded', () => {
-    pause = document.querySelector(".pause");
-    start = document.querySelector(".gameStart");
-    gameOv = document.querySelector(".gameOv");
+    gameMenu = document.querySelector(".gameMenu");
+    gMenuTxt = document.querySelector(".gMenuTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
-    startBtn = document.getElementById("start-button");
-    pauseBtn = document.getElementById("pause-button");
-    restartBtn = document.getElementById("restart-button");
     lines = document.getElementById("lines");
     lastScore = document.createElement("H2");
     lastLine = document.createElement("H2");
     displaySq = Array.from(document.querySelectorAll('.mini-grid div'));
+    displaySqMob = Array.from(document.querySelectorAll('.mini-grid-mob div'));
+    miniGridMob = document.querySelector('.mini-grid-mob');
+    gridCont = document.getElementById("gridContainer");
+    leftCont = document.getElementById("cont2");
+    let btns = document.createElement("DIV");
+    btns.classList.add("buttons");
+    btns.innerHTML += `
+        <button id="start-button" type="button" class="btn">Start</button>
+        <button id="pause-button" type="button" class="btn">Pause</button>
+        <button id="restart-button" type="button" class="btn">Restart</button>
+        <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
+    `;
+    if (navigator.maxTouchPoints > 0 &&
+        window.innerWidth < window.innerHeight) {
+        document.querySelector(".instructions").style.display = "none";
+        gameMenu.appendChild(btns);
+        startBtn = document.getElementById("start-button");
+        pauseBtn = document.getElementById("pause-button");
+        restartBtn = document.getElementById("restart-button");
+        let fullSBtn = document.getElementById("fullscreen-button");
+        fullSBtn === null || fullSBtn === void 0 ? void 0 : fullSBtn.setAttribute("hidden", "false");
+        fullSBtn.style.display = "block";
+        fullSBtn.addEventListener('click', () => {
+            if (fullSBtn.innerText == "FullScreen") {
+                fullSBtn.innerText = "Exit FullScreen";
+            }
+            else {
+                fullSBtn.innerText = "FullScreen";
+            }
+            toggleFS();
+        });
+    }
+    else {
+        leftCont.appendChild(btns);
+        startBtn = document.getElementById("start-button");
+        pauseBtn = document.getElementById("pause-button");
+        restartBtn = document.getElementById("restart-button");
+    }
+    initBtns();
+});
+function initBtns() {
     if (startBtn && grid) {
         startBtn.addEventListener('click', () => {
-            gameMan.stat = gameStatus.Started;
-            draw();
-            start.style.display = "none";
-            document.addEventListener('keydown', control);
-            document.addEventListener('keyup', controlR);
-            grid.addEventListener("touchstart", mobileMoveStart);
-            grid.addEventListener("touchend", mobileMoveEnd);
-            timerId = setInterval(moveDown, 500);
-            nextRandom = Math.floor(Math.random() * tetrominos.length);
-            displayShape();
-            pauseBtn.style.display = "block";
-            startBtn.style.display = "none";
+            startGame();
         });
     }
     if (pauseBtn) {
         pauseBtn.addEventListener('click', () => {
-            if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
-                gameMan.stat = gameStatus.Paused;
-                clearInterval(timerId);
-                document.removeEventListener('keyup', controlR);
-                document.removeEventListener('keydown', control);
-                grid.removeEventListener("touchstart", mobileMoveStart);
-                grid.removeEventListener("touchend", mobileMoveEnd);
-                timerId = 0;
-                pauseBtn.innerText = "Continue";
-                pause.style.display = "block";
-                restartBtn.style.display = "block";
-            }
-            else {
-                gameMan.stat = gameStatus.Started;
-                pause.style.display = "none";
-                restartBtn.style.display = "none";
-                draw();
-                document.addEventListener('keydown', control);
-                document.addEventListener('keyup', controlR);
-                grid.addEventListener("touchstart", mobileMoveStart);
-                grid.addEventListener("touchend", mobileMoveEnd);
-                timerId = setInterval(moveDown, 500);
-                pauseBtn.innerText = "Puase";
-            }
+            togglePause();
         });
     }
     if (restartBtn) {
         restartBtn.addEventListener('click', () => {
-            pause.style.display = "none";
-            pauseBtn.innerText = "Puase";
-            for (let i = 0; i < 250; i++) {
-                squares[i].classList.remove("tetrominos", "taken");
-                squares[i].style.backgroundColor = '';
-                squares[i].style.borderColor = '';
-            }
-            pauseBtn.style.display = "block";
-            document.addEventListener('keydown', control);
-            document.addEventListener('keyup', controlR);
-            grid.addEventListener("touchstart", mobileMoveStart);
-            grid.addEventListener("touchend", mobileMoveEnd);
-            timerId = setInterval(moveDown, 500);
-            nextRandom = Math.floor(Math.random() * tetrominos.length);
-            score = 0;
-            scoreDisplay.innerHTML = score.toString();
-            lineCounter = 0;
-            lines.innerHTML = lineCounter.toString();
-            if (gameMan.stat == gameStatus.GameOver) {
-                gameOv.style.display = "none";
-                gameOv.removeChild(lastLine);
-                gameOv.removeChild(lastScore);
-            }
-            gameMan.stat = gameStatus.Started;
-            reset();
-            displayShape();
-            draw();
-            restartBtn.style.display = "none";
+            restartGame();
         });
     }
-});
+}
+function startGame() {
+    gameMan.stat = gameStatus.Started;
+    draw();
+    gameMenu.style.display = "none";
+    document.addEventListener('keydown', control);
+    document.addEventListener('keyup', controlR);
+    grid.addEventListener("touchstart", mobileMoveStart);
+    grid.addEventListener("touchend", mobileMoveEnd);
+    timerId = setInterval(moveDown, 500);
+    nextRandom = Math.floor(Math.random() * tetrominos.length);
+    displayShape();
+    displayShapeMob();
+    pauseBtn.style.display = "block";
+    startBtn.style.display = "none";
+}
+function restartGame() {
+    gameMenu.style.display = "none";
+    pauseBtn.innerText = "Puase";
+    for (let i = 0; i < 250; i++) {
+        squares[i].classList.remove("tetrominos", "taken");
+        squares[i].style.backgroundColor = '';
+        squares[i].style.borderColor = '';
+    }
+    pauseBtn.style.display = "block";
+    document.addEventListener('keydown', control);
+    document.addEventListener('keyup', controlR);
+    grid.addEventListener("touchstart", mobileMoveStart);
+    grid.addEventListener("touchend", mobileMoveEnd);
+    timerId = setInterval(moveDown, 500);
+    nextRandom = Math.floor(Math.random() * tetrominos.length);
+    score = 0;
+    scoreDisplay.innerHTML = score.toString();
+    lineCounter = 0;
+    lines.innerHTML = lineCounter.toString();
+    if (gameMan.stat == gameStatus.GameOver) {
+        gameMenu.style.display = "none";
+        gameMenu.removeChild(lastLine);
+        gameMenu.removeChild(lastScore);
+    }
+    gameMan.stat = gameStatus.Started;
+    reset();
+    displayShape();
+    draw();
+    restartBtn.style.display = "none";
+}
+function togglePause() {
+    if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
+        gameMan.stat = gameStatus.Paused;
+        clearInterval(timerId);
+        document.removeEventListener('keyup', controlR);
+        document.removeEventListener('keydown', control);
+        grid.removeEventListener("touchstart", mobileMoveStart);
+        grid.removeEventListener("touchend", mobileMoveEnd);
+        timerId = 0;
+        pauseBtn.innerText = "Continue";
+        gMenuTxt.innerText = "-- Pause --";
+        gameMenu.style.display = "block";
+        restartBtn.style.display = "block";
+    }
+    else {
+        gameMan.stat = gameStatus.Started;
+        gameMenu.style.display = "none";
+        restartBtn.style.display = "none";
+        draw();
+        document.addEventListener('keydown', control);
+        document.addEventListener('keyup', controlR);
+        grid.addEventListener("touchstart", mobileMoveStart);
+        grid.addEventListener("touchend", mobileMoveEnd);
+        timerId = setInterval(moveDown, 500);
+        pauseBtn.innerText = "Puase";
+    }
+}
 function addScore() {
     for (let i = 0; i < 249; i += width) {
         let row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
@@ -160,11 +212,12 @@ function gameOver() {
         pauseBtn.style.display = "none";
         lastScore.textContent = "Score: " + score;
         lastScore.classList.add("gameOvTxt");
-        gameOv.appendChild(lastScore);
+        gameMenu.appendChild(lastScore);
         lastLine.textContent = "Lines: " + lineCounter;
         lastLine.classList.add("gameOvTxt");
-        gameOv.appendChild(lastLine);
-        gameOv.style.display = "block";
+        gameMenu.appendChild(lastLine);
+        gMenuTxt.innerText = "Game Over";
+        gameMenu.style.display = "block";
         clearInterval(timerId);
         document.removeEventListener('keydown', control);
         document.removeEventListener('keyup', controlR);
@@ -231,6 +284,65 @@ function mobileHMove(col) {
             actualPos = (initialPos + 1) % 10;
         }
     }
+}
+function toggleFS() {
+    if (!document.fullscreenElement) {
+        gridCont.requestFullscreen()
+            .then(() => {
+            gridToFS();
+            menusToFS();
+            miniGridMob.style.display = "flex";
+            displayShapeMob();
+            window.addEventListener('popstate', e => {
+                e.preventDefault();
+                if (gameMan.stat == gameStatus.Unstarted) {
+                }
+                else {
+                    togglePause();
+                }
+            });
+        })
+            .catch(er => {
+            console.log(er);
+        });
+    }
+    else {
+        exitFS();
+        miniGridMob.style.display = "none";
+        document.exitFullscreen();
+        window.removeEventListener('popstate', () => { });
+    }
+}
+function gridToFS() {
+    grid.style.height = "100%";
+    let h = window.innerHeight;
+    let w = (h * 200) / 500;
+    grid.style.width = w + "px";
+}
+function exitFS() {
+    grid.style.height = "500px";
+    grid.style.width = "200px";
+    gameMenu.classList.remove("gameMenuFS");
+    gameMenu.classList.add("gameMenu");
+}
+function menusToFS() {
+    gameMenu.classList.remove("gameMenu");
+    gameMenu.classList.add("gameMenuFS");
+}
+function displayShapeMob() {
+    if (gameMan.stat != gameStatus.Started) {
+        return;
+    }
+    displaySqMob.forEach(square => {
+        square.classList.remove('tetrominos');
+        square.style.backgroundColor = '';
+        square.style.borderColor = '';
+    });
+    upNextTetrominoes[nextRandom].forEach(index => {
+        displaySqMob[displayIndex + index].classList.add('tetrominos');
+        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextRandom];
+        displaySqMob[displayIndex + index].style.borderColor = colors[nextRandom];
+    });
 }
 let nextRandom;
 let timerId;
@@ -347,7 +459,12 @@ function freeze() {
         initialPos = 3;
         addScore();
         draw();
-        displayShape();
+        if (document.fullscreenElement) {
+            displayShapeMob();
+        }
+        else {
+            displayShape();
+        }
         gameOver();
         return true;
     }

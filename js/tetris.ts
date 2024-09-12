@@ -131,7 +131,11 @@ function freeze(): boolean {
         initialPos = 3;
         addScore();
         draw();
-        displayShape();
+        if (document.fullscreenElement){
+            displayShapeMob();
+        } else {
+            displayShape();
+        }
         gameOver();
         return true;
     };

@@ -1,7 +1,7 @@
-let pause: HTMLElement | null;
-let start: HTMLElement | null;
-let gameOv: HTMLElement | null;
+let gameMenu: HTMLElement | null;
+let gMenuTxt: HTMLElement | null;
 let grid: HTMLElement | null;
+let miniGridMob: HTMLElement | null;
 let squares: HTMLElement[];
 let lastLine: HTMLElement | null;
 let lastScore: HTMLElement | null;
@@ -11,6 +11,10 @@ let pauseBtn: HTMLElement | null;
 let restartBtn: HTMLElement | null;
 let scoreDisplay: HTMLElement | null;
 let displaySq: HTMLElement[];
+let displaySqMob: HTMLElement[];
+let gridCont: HTMLElement | null;
+let leftCont: HTMLElement | null;
+let buttons: HTMLElement[] | null;
 
 enum gameStatus {
     Unstarted,
@@ -32,105 +36,165 @@ let gameMan: game = {
 }
 
 document.addEventListener('DOMContentLoaded',() => {
-    pause = document.querySelector(".pause");
-    start = document.querySelector(".gameStart");
-    gameOv = document.querySelector(".gameOv");
+    gameMenu = document.querySelector(".gameMenu");
+    gMenuTxt = document.querySelector(".gMenuTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
-    startBtn = document.getElementById("start-button");
-    pauseBtn = document.getElementById("pause-button");
-    restartBtn = document.getElementById("restart-button");
     lines = document.getElementById("lines");
     lastScore = document.createElement("H2");
     lastLine = document.createElement("H2");
     displaySq = Array.from(document.querySelectorAll('.mini-grid div'));
+    displaySqMob = Array.from(document.querySelectorAll('.mini-grid-mob div'));
+    miniGridMob = document.querySelector('.mini-grid-mob');
+    gridCont = document.getElementById("gridContainer");
+    leftCont = document.getElementById("cont2");
+    let btns = document.createElement("DIV");
+    btns.classList.add("buttons");
+    btns.innerHTML += `
+        <button id="start-button" type="button" class="btn">Start</button>
+        <button id="pause-button" type="button" class="btn">Pause</button>
+        <button id="restart-button" type="button" class="btn">Restart</button>
+        <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
+    `;
 
-    // start button {{{
+    // mobile detect
+    if (navigator.maxTouchPoints > 0 &&
+       window.innerWidth < window.innerHeight) {
+        (document.querySelector(".instructions") as HTMLElement).style.display="none";
+        // generate btns for mobile
+        gameMenu!.appendChild(btns);
+        startBtn = document.getElementById("start-button");
+        pauseBtn = document.getElementById("pause-button");
+        restartBtn = document.getElementById("restart-button");
+        let fullSBtn = document.getElementById("fullscreen-button");
+        fullSBtn?.setAttribute("hidden", "false");
+        fullSBtn!.style.display = "block";
+        fullSBtn!.addEventListener('click', () => {
+            if (fullSBtn!.innerText == "FullScreen") {
+                fullSBtn!.innerText = "Exit FullScreen";
+            } else {
+                fullSBtn!.innerText = "FullScreen";
+            }
+            toggleFS();
+        })
+    } else {
+        // generate btns for web browser
+        leftCont!.appendChild(btns);
+        startBtn = document.getElementById("start-button");
+        pauseBtn = document.getElementById("pause-button");
+        restartBtn = document.getElementById("restart-button");
+    }
+
+    initBtns();
+});
+
+// initBtns {{{
+function initBtns() {
+    // start btn
     if (startBtn && grid) {
         startBtn.addEventListener('click', ()=>{
-            // start game
-            gameMan.stat = gameStatus.Started;
-            draw();
-            start!.style.display = "none";
-            document.addEventListener('keydown',control);
-            document.addEventListener('keyup',controlR);
-            grid!.addEventListener("touchstart",mobileMoveStart)
-            grid!.addEventListener("touchend",mobileMoveEnd)
-            timerId = setInterval(moveDown, 500);
-            nextRandom = Math.floor(Math.random()*tetrominos.length);
-            displayShape();
-            pauseBtn!.style.display = "block";
-            startBtn!.style.display = "none";
+            startGame();
         });
     }
-    // }}}
 
-    // pause btn {{{
+    // pause btn
     if (pauseBtn) {
         pauseBtn.addEventListener('click', ()=>{
-            if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
-                gameMan.stat = gameStatus.Paused;
-                clearInterval(timerId);
-                document.removeEventListener('keyup',controlR);
-                document.removeEventListener('keydown',control);
-                grid!.removeEventListener("touchstart",mobileMoveStart);
-                grid!.removeEventListener("touchend",mobileMoveEnd);
-                timerId = 0;
-                pauseBtn!.innerText = "Continue";
-                pause!.style.display = "block";
-                restartBtn!.style.display = "block";
-            } else {
-                gameMan.stat = gameStatus.Started;
-                pause!.style.display = "none";
-                restartBtn!.style.display = "none";
-                draw();
-                document.addEventListener('keydown',control);
-                document.addEventListener('keyup',controlR);
-                grid!.addEventListener("touchstart",mobileMoveStart)
-                grid!.addEventListener("touchend",mobileMoveEnd)
-                timerId = setInterval(moveDown, 500);
-                pauseBtn!.innerText = "Puase";
-            }
+            togglePause();
         })
     }
-    // }}}
 
-    // restartBtn {{{
+    // restart btn
     if (restartBtn) {
         restartBtn.addEventListener('click', ()=>{
-            pause!.style.display = "none";
-            pauseBtn!.innerText = "Puase";
-            for(let i = 0; i < 250; i++) {
-                squares[i].classList.remove("tetrominos","taken");
-                squares[i].style.backgroundColor = '';
-                squares[i].style.borderColor = '';
-            }
-            pauseBtn!.style.display = "block";
-            document.addEventListener('keydown',control);
-            document.addEventListener('keyup',controlR);
-            grid!.addEventListener("touchstart",mobileMoveStart)
-            grid!.addEventListener("touchend",mobileMoveEnd)
-            timerId = setInterval(moveDown, 500);
-            nextRandom = Math.floor(Math.random()*tetrominos.length);
-            score = 0;
-            scoreDisplay!.innerHTML = score.toString();
-            lineCounter = 0;
-            lines!.innerHTML = lineCounter.toString();
-            if (gameMan.stat == gameStatus.GameOver) {
-                gameOv!.style.display = "none";
-                gameOv!.removeChild(lastLine!);
-                gameOv!.removeChild(lastScore!);
-            }
-            gameMan.stat = gameStatus.Started;
-            reset();
-            displayShape();
-            draw();
-            restartBtn!.style.display = "none";
+            restartGame();
         })
     }
-    // }}}
-});
+}
+// }}}
+
+// start fn {{{
+function startGame() {
+    gameMan.stat = gameStatus.Started;
+    draw();
+    gameMenu!.style.display = "none";
+    document.addEventListener('keydown',control);
+    document.addEventListener('keyup',controlR);
+    grid!.addEventListener("touchstart",mobileMoveStart)
+    grid!.addEventListener("touchend",mobileMoveEnd)
+    timerId = setInterval(moveDown, 500);
+    nextRandom = Math.floor(Math.random()*tetrominos.length);
+    displayShape();
+    displayShapeMob();
+    pauseBtn!.style.display = "block";
+    startBtn!.style.display = "none";
+}
+// }}}
+
+// restart fn {{{
+function restartGame() {
+    gameMenu!.style.display = "none";
+    pauseBtn!.innerText = "Puase";
+    for(let i = 0; i < 250; i++) {
+        squares[i].classList.remove("tetrominos","taken");
+        squares[i].style.backgroundColor = '';
+        squares[i].style.borderColor = '';
+    }
+    pauseBtn!.style.display = "block";
+    document.addEventListener('keydown',control);
+    document.addEventListener('keyup',controlR);
+    grid!.addEventListener("touchstart",mobileMoveStart)
+    grid!.addEventListener("touchend",mobileMoveEnd)
+    timerId = setInterval(moveDown, 500);
+    nextRandom = Math.floor(Math.random()*tetrominos.length);
+    score = 0;
+    scoreDisplay!.innerHTML = score.toString();
+    lineCounter = 0;
+    lines!.innerHTML = lineCounter.toString();
+    if (gameMan.stat == gameStatus.GameOver) {
+        gameMenu!.style.display = "none";
+        gameMenu!.removeChild(lastLine!);
+        gameMenu!.removeChild(lastScore!);
+    }
+    gameMan.stat = gameStatus.Started;
+    reset();
+    displayShape();
+    draw();
+    restartBtn!.style.display = "none";
+}
+// }}}
+
+// pause fn {{{
+function togglePause() {
+    if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
+        // pause
+        gameMan.stat = gameStatus.Paused;
+        clearInterval(timerId);
+        document.removeEventListener('keyup',controlR);
+        document.removeEventListener('keydown',control);
+        grid!.removeEventListener("touchstart",mobileMoveStart);
+        grid!.removeEventListener("touchend",mobileMoveEnd);
+        timerId = 0;
+        pauseBtn!.innerText = "Continue";
+        gMenuTxt!.innerText = "-- Pause --";
+        gameMenu!.style.display = "block";
+        restartBtn!.style.display = "block";
+    } else {
+        // unpause
+        gameMan.stat = gameStatus.Started;
+        gameMenu!.style.display = "none";
+        restartBtn!.style.display = "none";
+        draw();
+        document.addEventListener('keydown',control);
+        document.addEventListener('keyup',controlR);
+        grid!.addEventListener("touchstart",mobileMoveStart)
+        grid!.addEventListener("touchend",mobileMoveEnd)
+        timerId = setInterval(moveDown, 500);
+        pauseBtn!.innerText = "Puase";
+    }
+}
+// }}}
 
 // add score {{{
 function addScore() {
@@ -189,11 +253,12 @@ function gameOver() {
         pauseBtn!.style.display = "none";
         lastScore!.textContent = "Score: " + score;
         lastScore!.classList.add("gameOvTxt");
-        gameOv!.appendChild(lastScore!);
+        gameMenu!.appendChild(lastScore!);
         lastLine!.textContent = "Lines: " + lineCounter;
         lastLine!.classList.add("gameOvTxt");
-        gameOv!.appendChild(lastLine!);
-        gameOv!.style.display = "block";
+        gameMenu!.appendChild(lastLine!);
+        gMenuTxt!.innerText = "Game Over";
+        gameMenu!.style.display = "block";
         clearInterval(timerId);
         document.removeEventListener('keydown',control);
         document.removeEventListener('keyup',controlR);
