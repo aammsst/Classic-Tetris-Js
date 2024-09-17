@@ -117,14 +117,14 @@ function initBtns() {
 // start fn {{{
 function startGame() {
     gameMan.stat = gameStatus.Started;
-    draw();
     gameMenu!.style.display = "none";
     document.addEventListener('keydown',control);
     document.addEventListener('keyup',controlR);
     grid!.addEventListener("touchstart",mobileMoveStart)
     grid!.addEventListener("touchend",mobileMoveEnd)
     timerId = setInterval(moveDown, 500);
-    nextRandom = Math.floor(Math.random()*tetrominos.length);
+    nextRandom = getNextRand();
+    draw();
     displayShape();
     displayShapeMob();
     pauseBtn!.style.display = "block";
@@ -147,7 +147,7 @@ function restartGame() {
     grid!.addEventListener("touchstart",mobileMoveStart)
     grid!.addEventListener("touchend",mobileMoveEnd)
     timerId = setInterval(moveDown, 500);
-    nextRandom = Math.floor(Math.random()*tetrominos.length);
+    nextRandom = getNextRand();
     score = 0;
     scoreDisplay!.innerHTML = score.toString();
     lineCounter = 0;
@@ -242,12 +242,12 @@ function addScore() {
             squares.forEach(cell => grid!.appendChild(cell));
         }
     }
-};
+}
 // }}}
 
 // game over {{{
 function gameOver() {
-    if (current.some(index => squares[initialPos + index].classList.contains('taken'))) {
+    if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
         gameMan.stat = gameStatus.GameOver;
         restartBtn!.style.display = "block";
         pauseBtn!.style.display = "none";
@@ -263,5 +263,5 @@ function gameOver() {
         document.removeEventListener('keydown',control);
         document.removeEventListener('keyup',controlR);
     }
-};
+}
 // }}}

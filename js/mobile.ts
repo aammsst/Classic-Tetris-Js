@@ -13,7 +13,7 @@ function mobileMoveStart(e: TouchEvent) {
     moveStartX = e.changedTouches[0].clientX;
     moveStartY = e.changedTouches[0].clientY;
     // return moveStartY;
-};
+}
 // when touch ends, takes the X value
 function mobileMoveEnd(e: TouchEvent) {
     e.preventDefault();
@@ -22,7 +22,7 @@ function mobileMoveEnd(e: TouchEvent) {
     let col = e.changedTouches[0].target as HTMLElement;
     let intCol = parseInt(col.getAttribute("col")!);
     moveDetec(moveStartX,moveEndX,moveStartY,moveEndY, intCol);
-};
+}
 
 // s=Start, e=End
 function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) {
@@ -40,7 +40,7 @@ function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) 
 
 function mobileHMove(col: number) {
     let i = 0;
-    let actualPos = (initialPos + 1) % 10;
+    let actualPos = (currPos + 1) % 10;
     if (actualPos > col) {
         if (col == 0) {
             fullLeft();
@@ -49,7 +49,7 @@ function mobileHMove(col: number) {
         while (actualPos > col && i < 10) {
             i++;
             moveLeft();
-            actualPos = (initialPos + 1) % 10;
+            actualPos = (currPos + 1) % 10;
         }
     } else {
         if (col == 9) {
@@ -59,7 +59,7 @@ function mobileHMove(col: number) {
         while (actualPos < col && i < 10) {
             i++;
             moveRight();
-            actualPos = (initialPos + 1) % 10;
+            actualPos = (currPos + 1) % 10;
         }
     }
 }
@@ -129,9 +129,9 @@ function displayShapeMob() {
         square.style.backgroundColor = '';
         square.style.borderColor = '';
     })
-    upNextTetrominoes[nextRandom].forEach(index => {
+    upNextTetrominoes[nextIdx].forEach(index => {
         displaySqMob[displayIndex + index].classList.add('tetrominos');
-        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextRandom];
-        displaySqMob[displayIndex + index].style.borderColor = colors[nextRandom];
+        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextIdx];
+        displaySqMob[displayIndex + index].style.borderColor = colors[nextIdx];
     })
 }
