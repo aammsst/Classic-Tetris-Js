@@ -258,44 +258,106 @@ function rotateCW() {
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+
     if (!rightEdge && !leftEdge) {
-        currRot++
-            // ------------------------- exception for L tetrominos
-    } else if (rightEdge && currIdx == 0 && currRot != 1) {
-        currRot++
-    } else if (leftEdge && currIdx == 0 && currRot != 3) {
-        currRot++
-            // ------------------------- exception fot Z tetrominos
-    } else if (rightEdge && currIdx == 1) {
-        currRot++
-    } else if (leftEdge && currIdx == 1 && (currRot == 0 || currRot == 2)) {
-        currRot++
-            // ------------------------- exception for I tetrominos
-    } else if (rightEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot++
-    } else if (leftEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot++
-            // ------------------------- exception for T tetrominos
-    } else if (rightEdge && currIdx == 4 && currRot != 1) {
-        currRot++
-    } else if (leftEdge && currIdx == 4 && currRot != 3) {
-        currRot++
-            // ------------------------- exception for S tetrominos
-    } else if (rightEdge && currIdx == 5) {
-        currRot++
-    } else if (leftEdge && currIdx == 5 && (currRot == 0 || currRot == 2)) {
-        currRot++
-            // ------------------------- exception for J tetrominos
-    } else if (rightEdge && currIdx == 6 && currRot != 1) {
-        currRot++
-    } else if (leftEdge && currIdx == 6 && currRot != 3) {
-        currRot++
+        currRot++;
+
+    } else if (rightEdge) {
+        switch (currIdx) {
+            case 0:
+                // l
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+            case 1:
+                // z
+                currRot++;
+                break;
+            case 2:
+                // o
+                draw();
+                return;
+            case 3:
+                // i
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 4:
+                // t
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+            case 5:
+                // s
+                currRot++;
+                break;
+            case 6:
+                // j
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+        }
+    } else if (leftEdge) {
+        switch (currIdx) {
+            case 0:
+                // l
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+            case 1:
+                // z
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 2:
+                // o
+                draw();
+                return;
+            case 3:
+                // i
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 4:
+                // t
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+            case 5:
+                // s
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 6:
+                // j
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+        }
     }
 
-    if (currRot === curr.length)
-        currRot = 0 
-        
-    curr= tetrominos[currIdx][currRot];
+    if (currRot === curr.length) {
+        currRot = 0;
+    }
+
+    curr = tetrominos[currIdx][currRot];
+    // overlapping check
+    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
+    if (check) {
+        currRot--;
+        curr = tetrominos[currIdx][currRot];
+    }
+
     draw();
 }
 
@@ -304,44 +366,106 @@ function rotateCCW() {
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+
     if (!rightEdge && !leftEdge) {
-        currRot--
-            // ------------------------- exception for L tetrominos
-    } else if (rightEdge && currIdx == 0 && currRot != 1) {
-        currRot--
-    } else if (leftEdge && currIdx == 0 && currRot != 3) {
-        currRot--
-            // ------------------------- exception fot Z tetrominos
-    } else if (rightEdge && currIdx == 1) {
-        currRot--
-    } else if (leftEdge && currIdx == 1 && (currRot == 0 || currRot == 2)) {
-        currRot--
-            // ------------------------- exception for I tetrominos
-    } else if (rightEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot--
-    } else if (leftEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot--
-            // ------------------------- exception for T tetrominos
-    } else if (rightEdge && currIdx == 4 && currRot != 1) {
-        currRot--
-    } else if (leftEdge && currIdx == 4 && currRot != 3) {
-        currRot--
-            // ------------------------- exception for S tetrominos
-    } else if (rightEdge && currIdx == 5) {
-        currRot--
-    } else if (leftEdge && currIdx == 5 && (currRot == 0 || currRot == 2)) {
-        currRot--
-            // ------------------------- exception for J tetrominos
-    } else if (rightEdge && currIdx == 6 && currRot != 1) {
-        currRot--
-    } else if (leftEdge && currIdx == 6 && currRot != 3) {
-        currRot--
+        currRot--;
+    } else if (rightEdge) {
+        switch (currIdx) {
+            case 0:
+                // l
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+            case 1:
+                // z
+                currRot--;
+                break;
+            case 2:
+                // o
+                draw();
+                return;
+            case 3:
+                // i
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 4:
+                // t
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+            case 5:
+                // s
+                currRot--;
+                break;
+            case 6:
+                // j
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+        }
+
+    } else if (leftEdge) {
+        switch (currIdx) {
+            case 0:
+                // l
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+            case 1:
+                // z
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 2:
+                // o
+                draw();
+                return;
+            case 3:
+                // i
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 4:
+                // t
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+            case 5:
+                // s
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 6:
+                // j
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+        }
     }
 
-    if (currRot < 0)
-        currRot = 3
+    if (currRot < 0) {
+        currRot = 3;
+    }
 
     curr = tetrominos[currIdx][currRot];
+    // overlapping check
+    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
+    if (check) {
+        currRot++;
+        curr = tetrominos[currIdx][currRot];
+    }
+
     draw();
 }
 // }}}

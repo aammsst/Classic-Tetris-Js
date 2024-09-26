@@ -560,45 +560,85 @@ function rotateCW() {
     if (!rightEdge && !leftEdge) {
         currRot++;
     }
-    else if (rightEdge && currIdx == 0 && currRot != 1) {
-        currRot++;
+    else if (rightEdge) {
+        switch (currIdx) {
+            case 0:
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+            case 1:
+                currRot++;
+                break;
+            case 2:
+                draw();
+                return;
+            case 3:
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 4:
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+            case 5:
+                currRot++;
+                break;
+            case 6:
+                if (currRot != 1) {
+                    currRot++;
+                }
+                break;
+        }
     }
-    else if (leftEdge && currIdx == 0 && currRot != 3) {
-        currRot++;
+    else if (leftEdge) {
+        switch (currIdx) {
+            case 0:
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+            case 1:
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 2:
+                draw();
+                return;
+            case 3:
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 4:
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+            case 5:
+                if (currRot == 0 || currRot == 2) {
+                    currRot++;
+                }
+                break;
+            case 6:
+                if (currRot != 3) {
+                    currRot++;
+                }
+                break;
+        }
     }
-    else if (rightEdge && currIdx == 1) {
-        currRot++;
-    }
-    else if (leftEdge && currIdx == 1 && (currRot == 0 || currRot == 2)) {
-        currRot++;
-    }
-    else if (rightEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot++;
-    }
-    else if (leftEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot++;
-    }
-    else if (rightEdge && currIdx == 4 && currRot != 1) {
-        currRot++;
-    }
-    else if (leftEdge && currIdx == 4 && currRot != 3) {
-        currRot++;
-    }
-    else if (rightEdge && currIdx == 5) {
-        currRot++;
-    }
-    else if (leftEdge && currIdx == 5 && (currRot == 0 || currRot == 2)) {
-        currRot++;
-    }
-    else if (rightEdge && currIdx == 6 && currRot != 1) {
-        currRot++;
-    }
-    else if (leftEdge && currIdx == 6 && currRot != 3) {
-        currRot++;
-    }
-    if (currRot === curr.length)
+    if (currRot === curr.length) {
         currRot = 0;
+    }
     curr = tetrominos[currIdx][currRot];
+    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
+    if (check) {
+        currRot--;
+        curr = tetrominos[currIdx][currRot];
+    }
     draw();
 }
 function rotateCCW() {
@@ -608,45 +648,85 @@ function rotateCCW() {
     if (!rightEdge && !leftEdge) {
         currRot--;
     }
-    else if (rightEdge && currIdx == 0 && currRot != 1) {
-        currRot--;
+    else if (rightEdge) {
+        switch (currIdx) {
+            case 0:
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+            case 1:
+                currRot--;
+                break;
+            case 2:
+                draw();
+                return;
+            case 3:
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 4:
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+            case 5:
+                currRot--;
+                break;
+            case 6:
+                if (currRot != 1) {
+                    currRot--;
+                }
+                break;
+        }
     }
-    else if (leftEdge && currIdx == 0 && currRot != 3) {
-        currRot--;
+    else if (leftEdge) {
+        switch (currIdx) {
+            case 0:
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+            case 1:
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 2:
+                draw();
+                return;
+            case 3:
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 4:
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+            case 5:
+                if (currRot == 0 || currRot == 2) {
+                    currRot--;
+                }
+                break;
+            case 6:
+                if (currRot != 3) {
+                    currRot--;
+                }
+                break;
+        }
     }
-    else if (rightEdge && currIdx == 1) {
-        currRot--;
-    }
-    else if (leftEdge && currIdx == 1 && (currRot == 0 || currRot == 2)) {
-        currRot--;
-    }
-    else if (rightEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot--;
-    }
-    else if (leftEdge && currIdx == 3 && (currRot == 0 || currRot == 2)) {
-        currRot--;
-    }
-    else if (rightEdge && currIdx == 4 && currRot != 1) {
-        currRot--;
-    }
-    else if (leftEdge && currIdx == 4 && currRot != 3) {
-        currRot--;
-    }
-    else if (rightEdge && currIdx == 5) {
-        currRot--;
-    }
-    else if (leftEdge && currIdx == 5 && (currRot == 0 || currRot == 2)) {
-        currRot--;
-    }
-    else if (rightEdge && currIdx == 6 && currRot != 1) {
-        currRot--;
-    }
-    else if (leftEdge && currIdx == 6 && currRot != 3) {
-        currRot--;
-    }
-    if (currRot < 0)
+    if (currRot < 0) {
         currRot = 3;
+    }
     curr = tetrominos[currIdx][currRot];
+    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
+    if (check) {
+        currRot++;
+        curr = tetrominos[currIdx][currRot];
+    }
     draw();
 }
 function control(e) {
