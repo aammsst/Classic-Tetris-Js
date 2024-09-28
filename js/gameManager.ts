@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded',() => {
             }
             toggleFS();
         })
+        mobileEvents();
     } else {
         // generate btns for web browser
         leftCont!.appendChild(btns);

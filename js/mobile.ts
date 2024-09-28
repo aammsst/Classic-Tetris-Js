@@ -74,15 +74,7 @@ function toggleFS() {
             // display next on full screen
             miniGridMob!.style.display = "flex";
             displayShapeMob();
-            window.addEventListener('popstate', e => {
-                e.preventDefault();
-                // toggleFS();
-                if (gameMan.stat == gameStatus.Unstarted) {
-                    // show btns
-                } else {
-                    togglePause();
-                }
-            })
+            window.history.pushState({page: 1}, 'Full Screen')
         })
         .catch(er => {
             console.log(er);
@@ -91,8 +83,6 @@ function toggleFS() {
         exitFS();
         miniGridMob!.style.display = "none";
         document.exitFullscreen();
-        window.removeEventListener('popstate', ()=>{});
-        // reset grid and squares dimensions
     }
 }
 
@@ -134,4 +124,19 @@ function displayShapeMob() {
         displaySqMob[displayIndex + index].style.backgroundColor = colors[nextIdx];
         displaySqMob[displayIndex + index].style.borderColor = colors[nextIdx];
     })
+}
+
+function mobileEvents() {
+    document.addEventListener("visibilitychange", e => {
+        e.preventDefault();
+        if (gameMan.stat == gameStatus.Started) {
+            togglePause();
+        }
+    });
+    window.addEventListener('popstate', e => {
+        e.preventDefault();
+        if (gameMan.stat == gameStatus.Started) {
+            togglePause();
+        }
+    });
 }

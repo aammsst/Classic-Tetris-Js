@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             toggleFS();
         });
+        mobileEvents();
     }
     else {
         leftCont.appendChild(btns);
@@ -289,14 +290,7 @@ function toggleFS() {
             menusToFS();
             miniGridMob.style.display = "flex";
             displayShapeMob();
-            window.addEventListener('popstate', e => {
-                e.preventDefault();
-                if (gameMan.stat == gameStatus.Unstarted) {
-                }
-                else {
-                    togglePause();
-                }
-            });
+            window.history.pushState({ page: 1 }, 'Full Screen');
         })
             .catch(er => {
             console.log(er);
@@ -306,7 +300,6 @@ function toggleFS() {
         exitFS();
         miniGridMob.style.display = "none";
         document.exitFullscreen();
-        window.removeEventListener('popstate', () => { });
     }
 }
 function gridToFS() {
@@ -338,6 +331,20 @@ function displayShapeMob() {
         displaySqMob[displayIndex + index].classList.add('tetrominos');
         displaySqMob[displayIndex + index].style.backgroundColor = colors[nextIdx];
         displaySqMob[displayIndex + index].style.borderColor = colors[nextIdx];
+    });
+}
+function mobileEvents() {
+    document.addEventListener("visibilitychange", e => {
+        e.preventDefault();
+        if (gameMan.stat == gameStatus.Started) {
+            togglePause();
+        }
+    });
+    window.addEventListener('popstate', e => {
+        e.preventDefault();
+        if (gameMan.stat == gameStatus.Started) {
+            togglePause();
+        }
     });
 }
 let nextRandom;
