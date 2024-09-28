@@ -35,7 +35,6 @@ function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) 
     } else {
         mobileHMove(col);
     }
-    // } else { rotateCW(); }
 }
 
 function mobileHMove(col: number) {
@@ -66,6 +65,7 @@ function mobileHMove(col: number) {
 
 function toggleFS() {
     if (!document.fullscreenElement) {
+        fullSBtn!.innerText = "Exit FullScreen";
         gridCont!.requestFullscreen()
         .then(() => {
             // set grid and menues dimensions
@@ -81,6 +81,7 @@ function toggleFS() {
         })
     } else {
         exitFS();
+        fullSBtn!.innerText = "FullScreen";
         miniGridMob!.style.display = "none";
         document.exitFullscreen();
     }
@@ -127,16 +128,22 @@ function displayShapeMob() {
 }
 
 function mobileEvents() {
-    document.addEventListener("visibilitychange", e => {
+    document.addEventListener('visibilitychange', e => {
         e.preventDefault();
         if (gameMan.stat == gameStatus.Started) {
             togglePause();
+        }
+        if (document.fullscreenElement) {
+            toggleFS();
         }
     });
     window.addEventListener('popstate', e => {
         e.preventDefault();
         if (gameMan.stat == gameStatus.Started) {
             togglePause();
+        }
+        if (document.fullscreenElement) {
+            toggleFS();
         }
     });
 }

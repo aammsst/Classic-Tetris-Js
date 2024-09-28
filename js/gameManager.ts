@@ -15,6 +15,7 @@ let displaySqMob: HTMLElement[];
 let gridCont: HTMLElement | null;
 let leftCont: HTMLElement | null;
 let buttons: HTMLElement[] | null;
+let fullSBtn: HTMLElement | null;
 
 enum gameStatus {
     Unstarted,
@@ -67,15 +68,10 @@ document.addEventListener('DOMContentLoaded',() => {
         startBtn = document.getElementById("start-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
-        let fullSBtn = document.getElementById("fullscreen-button");
-        fullSBtn?.setAttribute("hidden", "false");
+        fullSBtn = document.getElementById("fullscreen-button");
+        fullSBtn!.setAttribute("hidden", "false");
         fullSBtn!.style.display = "block";
         fullSBtn!.addEventListener('click', () => {
-            if (fullSBtn!.innerText == "FullScreen") {
-                fullSBtn!.innerText = "Exit FullScreen";
-            } else {
-                fullSBtn!.innerText = "FullScreen";
-            }
             toggleFS();
         })
         mobileEvents();

@@ -16,6 +16,7 @@ let displaySqMob;
 let gridCont;
 let leftCont;
 let buttons;
+let fullSBtn;
 var gameStatus;
 (function (gameStatus) {
     gameStatus[gameStatus["Unstarted"] = 0] = "Unstarted";
@@ -57,16 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn = document.getElementById("start-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
-        let fullSBtn = document.getElementById("fullscreen-button");
-        fullSBtn === null || fullSBtn === void 0 ? void 0 : fullSBtn.setAttribute("hidden", "false");
+        fullSBtn = document.getElementById("fullscreen-button");
+        fullSBtn.setAttribute("hidden", "false");
         fullSBtn.style.display = "block";
         fullSBtn.addEventListener('click', () => {
-            if (fullSBtn.innerText == "FullScreen") {
-                fullSBtn.innerText = "Exit FullScreen";
-            }
-            else {
-                fullSBtn.innerText = "FullScreen";
-            }
             toggleFS();
         });
         mobileEvents();
@@ -284,6 +279,7 @@ function mobileHMove(col) {
 }
 function toggleFS() {
     if (!document.fullscreenElement) {
+        fullSBtn.innerText = "Exit FullScreen";
         gridCont.requestFullscreen()
             .then(() => {
             gridToFS();
@@ -298,6 +294,7 @@ function toggleFS() {
     }
     else {
         exitFS();
+        fullSBtn.innerText = "FullScreen";
         miniGridMob.style.display = "none";
         document.exitFullscreen();
     }
@@ -334,16 +331,22 @@ function displayShapeMob() {
     });
 }
 function mobileEvents() {
-    document.addEventListener("visibilitychange", e => {
+    document.addEventListener('visibilitychange', e => {
         e.preventDefault();
         if (gameMan.stat == gameStatus.Started) {
             togglePause();
+        }
+        if (document.fullscreenElement) {
+            toggleFS();
         }
     });
     window.addEventListener('popstate', e => {
         e.preventDefault();
         if (gameMan.stat == gameStatus.Started) {
             togglePause();
+        }
+        if (document.fullscreenElement) {
+            toggleFS();
         }
     });
 }
