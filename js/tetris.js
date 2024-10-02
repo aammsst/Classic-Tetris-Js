@@ -247,6 +247,9 @@ function moveDetec(sx, ex, sy, ey, col) {
     else if (ey - sy > 30) {
         softDrop();
     }
+    else if (ey - sy < -30) {
+        togglePause();
+    }
     else {
         mobileHMove(col);
     }

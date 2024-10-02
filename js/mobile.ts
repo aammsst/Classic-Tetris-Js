@@ -32,6 +32,8 @@ function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) 
         rotateCCW();
     } else if (ey - sy > 30){
         softDrop();
+    } else if (ey - sy < -30){
+        togglePause();
     } else {
         mobileHMove(col);
     }
