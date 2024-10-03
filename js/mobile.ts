@@ -41,7 +41,47 @@ function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) 
 
 function mobileHMove(col: number) {
     let i = 0;
-    let actualPos = (currPos + 1) % 10;
+    let correction = 1;
+    switch (currIdx) {
+        // exceptions on the position of the first block on the left
+        case 0:
+            // l
+            if (currRot == 3)
+                correction = 2;
+            break;
+        case 1:
+            // z
+            if (currRot == 1 || currRot == 3)
+                correction = 2;
+            break;
+        case 3:
+            // i
+            if (currRot == 1)
+                correction = 3;
+            
+            if (currRot == 3)
+                correction = 2;
+
+            break;
+        case 4:
+            // t
+            if (currRot == 3)
+                correction = 2;
+            break;
+        case 5:
+            // s
+            if (currRot == 1 || currRot == 3)
+                correction = 2;
+            break;
+        case 6:
+            // j
+            if (currRot == 3)
+                correction = 2;
+            break;
+    }
+
+    let actualPos = (currPos + correction) % 10;
+
     if (actualPos > col) {
         if (col == 0) {
             fullLeft();
@@ -50,7 +90,7 @@ function mobileHMove(col: number) {
         while (actualPos > col && i < 10) {
             i++;
             moveLeft();
-            actualPos = (currPos + 1) % 10;
+            actualPos = (currPos + correction) % 10;
         }
     } else {
         if (col == 9) {
@@ -60,7 +100,7 @@ function mobileHMove(col: number) {
         while (actualPos < col && i < 10) {
             i++;
             moveRight();
-            actualPos = (currPos + 1) % 10;
+            actualPos = (currPos + correction) % 10;
         }
     }
 }

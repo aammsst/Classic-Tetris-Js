@@ -256,7 +256,36 @@ function moveDetec(sx, ex, sy, ey, col) {
 }
 function mobileHMove(col) {
     let i = 0;
-    let actualPos = (currPos + 1) % 10;
+    let correction = 1;
+    switch (currIdx) {
+        case 0:
+            if (currRot == 3)
+                correction = 2;
+            break;
+        case 1:
+            if (currRot == 1 || currRot == 3)
+                correction = 2;
+            break;
+        case 3:
+            if (currRot == 1)
+                correction = 3;
+            if (currRot == 3)
+                correction = 2;
+            break;
+        case 4:
+            if (currRot == 3)
+                correction = 2;
+            break;
+        case 5:
+            if (currRot == 1 || currRot == 3)
+                correction = 2;
+            break;
+        case 6:
+            if (currRot == 3)
+                correction = 2;
+            break;
+    }
+    let actualPos = (currPos + correction) % 10;
     if (actualPos > col) {
         if (col == 0) {
             fullLeft();
@@ -265,7 +294,7 @@ function mobileHMove(col) {
         while (actualPos > col && i < 10) {
             i++;
             moveLeft();
-            actualPos = (currPos + 1) % 10;
+            actualPos = (currPos + correction) % 10;
         }
     }
     else {
@@ -276,7 +305,7 @@ function mobileHMove(col) {
         while (actualPos < col && i < 10) {
             i++;
             moveRight();
-            actualPos = (currPos + 1) % 10;
+            actualPos = (currPos + correction) % 10;
         }
     }
 }
@@ -370,14 +399,14 @@ const width = 10;
 const lTetromino = [
     [width + 1, width + 2, width + 3, width * 2 + 1],
     [1, 2, width + 2, width * 2 + 2],
-    [3, width + 1, width + 2, width + 3],
-    [2, width + 2, width * 2 + 2, width * 2 + 3],
+    [width + 1, 3, width + 2, width + 3],
+    [width + 2, 2, width * 2 + 2, width * 2 + 3],
 ];
 const zTetromino = [
     [width + 1, width + 2, width * 2 + 2, width * 2 + 3],
-    [3, width + 2, width + 3, width * 2 + 2],
+    [width + 2, 3, width + 3, width * 2 + 2],
     [width + 1, width + 2, width * 2 + 2, width * 2 + 3],
-    [3, width + 2, width + 3, width * 2 + 2],
+    [width + 2, 3, width + 3, width * 2 + 2],
 ];
 const oTetromino = [
     [1, 2, width + 1, width + 2],
@@ -387,25 +416,25 @@ const oTetromino = [
 ];
 const iTetromino = [
     [width + 1, width + 2, width + 3, width + 4],
-    [2, width + 2, width * 2 + 2, width * 3 + 2],
-    [width * 2 + 1, width * 2 + 2, width * 2 + 3, width * 2 + 4],
     [3, width + 3, width * 2 + 3, width * 3 + 3],
+    [width * 2 + 1, width * 2 + 2, width * 2 + 3, width * 2 + 4],
+    [2, width + 2, width * 2 + 2, width * 3 + 2],
 ];
 const tTetromino = [
     [width + 1, width + 2, width + 3, width * 2 + 2],
-    [2, width + 1, width + 2, width * 2 + 2],
-    [2, width + 1, width + 2, width + 3],
+    [width + 1, 2, width + 2, width * 2 + 2],
+    [width + 1, 2, width + 2, width + 3],
     [2, width + 2, width + 3, width * 2 + 2],
 ];
 const sTetromino = [
-    [width + 2, width + 3, width * 2 + 1, width * 2 + 2],
+    [width * 2 + 1, width + 2, width + 3, width * 2 + 2],
     [2, width + 2, width + 3, width * 2 + 3],
-    [width + 2, width + 3, width * 2 + 1, width * 2 + 2],
+    [width * 2 + 1, width + 2, width + 3, width * 2 + 2],
     [2, width + 2, width + 3, width * 2 + 3],
 ];
 const jTetromino = [
     [width + 1, width + 2, width + 3, width * 2 + 3],
-    [2, width + 2, width * 2 + 2, width * 2 + 1],
+    [width * 2 + 1, 2, width + 2, width * 2 + 2],
     [1, width + 1, width + 2, width + 3],
     [2, 3, width + 2, width * 2 + 2],
 ];

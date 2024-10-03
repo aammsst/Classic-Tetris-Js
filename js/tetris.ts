@@ -19,14 +19,14 @@ const width = 10;
     const lTetromino = [
 	    [width+1,width+2,width+3,width*2+1],
 	    [1,2,width+2,width*2+2],
-	    [3,width+1,width+2,width+3],
-	    [2,width+2,width*2+2,width*2+3],
+	    [width+1,3,width+2,width+3],
+	    [width+2,2,width*2+2,width*2+3],
     ];
     const zTetromino = [
 	    [width+1,width+2,width*2+2,width*2+3],
-	    [3,width+2,width+3,width*2+2],
+	    [width+2,3,width+3,width*2+2],
 	    [width+1,width+2,width*2+2,width*2+3],
-	    [3,width+2,width+3,width*2+2],
+	    [width+2,3,width+3,width*2+2],
     ];
     const oTetromino = [
 	    [1,2,width+1,width+2],
@@ -36,25 +36,25 @@ const width = 10;
     ];
     const iTetromino = [
 	    [width+1,width+2,width+3,width+4],
-	    [2,width+2,width*2+2,width*3+2],
-	    [width*2+1,width*2+2,width*2+3,width*2+4],
 	    [3,width+3,width*2+3,width*3+3],
+	    [width*2+1,width*2+2,width*2+3,width*2+4],
+	    [2,width+2,width*2+2,width*3+2],
     ];
     const tTetromino = [
 	    [width+1,width+2,width+3,width*2+2],
-	    [2,width+1,width+2,width*2+2],
-	    [2,width+1,width+2,width+3],
+	    [width+1,2,width+2,width*2+2],
+	    [width+1,2,width+2,width+3],
 	    [2,width+2,width+3,width*2+2],
     ];
     const sTetromino = [
-	    [width+2,width+3,width*2+1,width*2+2],
+	    [width*2+1,width+2,width+3,width*2+2],
 	    [2,width+2,width+3,width*2+3],
-	    [width+2,width+3,width*2+1,width*2+2],
+	    [width*2+1,width+2,width+3,width*2+2],
 	    [2,width+2,width+3,width*2+3],
     ];
     const jTetromino = [
 	    [width+1,width+2,width+3,width*2+3],
-	    [2,width+2,width*2+2,width*2+1],
+	    [width*2+1,2,width+2,width*2+2],
 	    [1,width+1,width+2,width+3],
 	    [2,3,width+2,width*2+2],
     ];
