@@ -16,6 +16,7 @@ let gridCont: HTMLElement | null;
 let leftCont: HTMLElement | null;
 let buttons: HTMLElement[] | null;
 let fullSBtn: HTMLElement | null;
+let mobInstr: HTMLElement | null = null;
 
 enum gameStatus {
     Unstarted,
@@ -51,19 +52,21 @@ document.addEventListener('DOMContentLoaded',() => {
     gridCont = document.getElementById("gridContainer");
     leftCont = document.getElementById("cont2");
     let btns = document.createElement("DIV");
-    btns.classList.add("buttons");
-    btns.innerHTML += `
-        <button id="start-button" type="button" class="btn">Start</button>
-        <button id="pause-button" type="button" class="btn">Pause</button>
-        <button id="restart-button" type="button" class="btn">Restart</button>
-        <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
-    `;
 
     // mobile detect
     if (navigator.maxTouchPoints > 0 &&
        window.innerWidth < window.innerHeight) {
         (document.querySelector(".instructions") as HTMLElement).style.display="none";
+
         // generate btns for mobile
+        btns.classList.add("mobBtns");
+        btns.innerHTML += `
+            <button id="start-button" type="button" class="btn">Start</button>
+            <button id="pause-button" type="button" class="btn">Pause</button>
+            <button id="restart-button" type="button" class="btn">Restart</button>
+            <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
+        `;
+
         gameMenu!.appendChild(btns);
         startBtn = document.getElementById("start-button");
         pauseBtn = document.getElementById("pause-button");
@@ -71,13 +74,30 @@ document.addEventListener('DOMContentLoaded',() => {
         fullSBtn = document.getElementById("fullscreen-button");
         fullSBtn!.setAttribute("hidden", "false");
         fullSBtn!.style.display = "block";
-        fullSBtn!.addEventListener('click', () => {
-            toggleFS();
-        })
+        fullSBtn!.addEventListener('click', toggleFS);
+
+        // instructions
+        mobInstr = document.createElement("DIV");
+        mobInstr.classList.add("mobInstructions");
+        mobInstr.innerHTML += `
+                    <img alt="Mobile Instructions" title="Mobile Instructions" id="mobInstr" src="./imgs/mobileInstructions.png">
+                    <br>
+                    <h4 id="mobInstrTxt">Tap to move</h4>
+        `;
+        gameMenu!.appendChild(mobInstr);
         mobileEvents();
+
     } else {
         // generate btns for web browser
+        btns.classList.add("buttons");
+        btns.innerHTML += `
+            <button id="start-button" type="button" class="btn">Start</button>
+            <button id="pause-button" type="button" class="btn">Pause</button>
+            <button id="restart-button" type="button" class="btn">Restart</button>
+            <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
+        `;
         leftCont!.appendChild(btns);
+
         startBtn = document.getElementById("start-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
@@ -132,6 +152,9 @@ function startGame() {
 // restart fn {{{
 function restartGame() {
     gameMenu!.style.display = "none";
+    if (mobInstr) {
+        mobInstr.style.display = "flex";
+    }
     pauseBtn!.innerText = "Puase";
     for(let i = 0; i < 250; i++) {
         squares[i].classList.remove("tetrominos","taken");
@@ -255,6 +278,9 @@ function gameOver() {
         lastLine!.classList.add("gameOvTxt");
         gameMenu!.appendChild(lastLine!);
         gMenuTxt!.innerText = "Game Over";
+        if (mobInstr) {
+            mobInstr!.style.display = "none";
+        }
         gameMenu!.style.display = "block";
         clearInterval(timerId);
         document.removeEventListener('keydown',control);

@@ -63,7 +63,7 @@ html{
 
 .gMenuTxt {
     display: block;
-    margin-top: 100%;
+    margin-top: 80%;
     color: #ebf6f7;
     height: fit-content;
     text-align: center;
@@ -192,4 +192,36 @@ html{
 
 .bot {
     display: none;
+}
+
+.mobInstructions {
+    display: flex;
+    position: absolute;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
+#mobInstrTxt {
+    color: red;
+    display: block;
+    margin: 0 auto;
+}
+
+#mobInstr {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 10px auto;
+}
+
+.mobBtns {
+    position: absolute;
+    top: 62%;
+    left: 0;
+    right: 0;
 }
