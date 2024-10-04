@@ -219,6 +219,7 @@ function gameOver() {
     }
 }
 let moveStartX, moveEndX, moveStartY, moveEndY;
+let sensibility = 50;
 function getX(e) {
     let col = e.changedTouches[0].target;
     let a = parseInt(col.getAttribute("col"));
@@ -238,16 +239,16 @@ function mobileMoveEnd(e) {
     moveDetec(moveStartX, moveEndX, moveStartY, moveEndY, intCol);
 }
 function moveDetec(sx, ex, sy, ey, col) {
-    if (sx - ex > 30) {
+    if (sx - ex > sensibility) {
         rotateCW();
     }
-    else if (sx - ex < -30) {
+    else if (sx - ex < -sensibility) {
         rotateCCW();
     }
-    else if (ey - sy > 30) {
+    else if (ey - sy > sensibility) {
         softDrop();
     }
-    else if (ey - sy < -30) {
+    else if (ey - sy < -sensibility) {
         togglePause();
     }
     else {

@@ -1,4 +1,5 @@
 let moveStartX: number, moveEndX: number, moveStartY: number, moveEndY: number;
+let sensibility = 50;
 
 function getX(e: TouchEvent) {
     let col = e.changedTouches[0].target as HTMLElement;
@@ -26,13 +27,13 @@ function mobileMoveEnd(e: TouchEvent) {
 
 // s=Start, e=End
 function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) {
-    if (sx - ex > 30){
+    if (sx - ex > sensibility){
         rotateCW();
-    } else if (sx - ex < -30){
+    } else if (sx - ex < -sensibility){
         rotateCCW();
-    } else if (ey - sy > 30){
+    } else if (ey - sy > sensibility){
         softDrop();
-    } else if (ey - sy < -30){
+    } else if (ey - sy < -sensibility){
         togglePause();
     } else {
         mobileHMove(col);
