@@ -83,26 +83,22 @@ function mobileHMove(col: number) {
 
     let actualPos = (currPos + correction) % 10;
 
+    if (actualPos === col) {
+        return;
+    }
+
     if (actualPos > col) {
-        if (col == 0) {
-            fullLeft();
-            return;
-        }
-        while (actualPos > col && i < 10) {
+        do {
             i++;
             moveLeft();
             actualPos = (currPos + correction) % 10;
-        }
+        } while (actualPos > col && i < 10)
     } else {
-        if (col == 9) {
-            fullRight();
-            return;
-        }
-        while (actualPos < col && i < 10) {
+        do {
             i++;
             moveRight();
             actualPos = (currPos + correction) % 10;
-        }
+        } while (actualPos < col && i < 10);
     }
 }
 

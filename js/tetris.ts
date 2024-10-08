@@ -211,20 +211,6 @@ function moveLeft() {
     draw();
 }
 
-function fullLeft() {
-    undraw();
-    let leftEdge = curr.some(index => (currPos + index) % width === 0);
-    while (!leftEdge) {
-        currPos--;
-        leftEdge = curr.some(index => (currPos + index) % width === 0);
-        if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-            currPos++;
-            break;
-        }
-    }
-    draw();
-}
-
 // move Right
 function moveRight() {
     undraw();
@@ -236,20 +222,6 @@ function moveRight() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken')))
         currPos--;
 
-    draw();
-}
-
-function fullRight() {
-    undraw();
-    let rightEdge = curr.some(index => (currPos + index) % width === width - 1);
-    while (!rightEdge) {
-        currPos++;
-        rightEdge = curr.some(index => (currPos + index) % width === width - 1);
-        if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-            currPos--;
-            break;
-        }
-    }
     draw();
 }
 

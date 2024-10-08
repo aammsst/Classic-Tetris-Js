@@ -307,27 +307,22 @@ function mobileHMove(col) {
             break;
     }
     let actualPos = (currPos + correction) % 10;
+    if (actualPos === col) {
+        return;
+    }
     if (actualPos > col) {
-        if (col == 0) {
-            fullLeft();
-            return;
-        }
-        while (actualPos > col && i < 10) {
+        do {
             i++;
             moveLeft();
             actualPos = (currPos + correction) % 10;
-        }
+        } while (actualPos > col && i < 10);
     }
     else {
-        if (col == 9) {
-            fullRight();
-            return;
-        }
-        while (actualPos < col && i < 10) {
+        do {
             i++;
             moveRight();
             actualPos = (currPos + correction) % 10;
-        }
+        } while (actualPos < col && i < 10);
     }
 }
 function toggleFS() {
@@ -581,19 +576,6 @@ function moveLeft() {
         currPos++;
     draw();
 }
-function fullLeft() {
-    undraw();
-    let leftEdge = curr.some(index => (currPos + index) % width === 0);
-    while (!leftEdge) {
-        currPos--;
-        leftEdge = curr.some(index => (currPos + index) % width === 0);
-        if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-            currPos++;
-            break;
-        }
-    }
-    draw();
-}
 function moveRight() {
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
@@ -601,19 +583,6 @@ function moveRight() {
         currPos++;
     if (curr.some(index => squares[currPos + index].classList.contains('taken')))
         currPos--;
-    draw();
-}
-function fullRight() {
-    undraw();
-    let rightEdge = curr.some(index => (currPos + index) % width === width - 1);
-    while (!rightEdge) {
-        currPos++;
-        rightEdge = curr.some(index => (currPos + index) % width === width - 1);
-        if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-            currPos--;
-            break;
-        }
-    }
     draw();
 }
 function rotateCW() {
