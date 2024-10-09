@@ -159,10 +159,10 @@ function displayShapeMob() {
         square.style.backgroundColor = '';
         square.style.borderColor = '';
     })
-    upNextTetrominoes[nextIdx].forEach(index => {
+    upNextTetrominoes[nextPiece].forEach(index => {
         displaySqMob[displayIndex + index].classList.add('tetrominos');
-        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextIdx];
-        displaySqMob[displayIndex + index].style.borderColor = colors[nextIdx];
+        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextPiece];
+        displaySqMob[displayIndex + index].style.borderColor = colors[nextPiece];
     })
 }
 
