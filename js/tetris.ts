@@ -176,6 +176,18 @@ function moveDown() {
 }
 
 function softDrop() {
+    clearInterval(timerId);
+    while (!curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
+        undraw();
+        currPos += width;
+        draw();
+    }
+    timerId = setInterval(moveDown, 500);
+}
+
+// TODO: settings menu to chose hard or soft, colors, and speed
+// also the score is muy bad
+function hardDrop() {
     while (!freeze()) {
         undraw();
         currPos += width;

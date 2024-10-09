@@ -546,6 +546,15 @@ function moveDown() {
     }
 }
 function softDrop() {
+    clearInterval(timerId);
+    while (!curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
+        undraw();
+        currPos += width;
+        draw();
+    }
+    timerId = setInterval(moveDown, 500);
+}
+function hardDrop() {
     while (!freeze()) {
         undraw();
         currPos += width;
