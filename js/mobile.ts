@@ -43,7 +43,7 @@ function moveDetec(sx: number, ex: number, sy: number, ey: number, col: number) 
 function mobileHMove(col: number) {
     let i = 0;
     let correction = 1;
-    switch (currIdx) {
+    switch (currPiece) {
         // exceptions on the position of the first block on the left
         case 0:
             // l

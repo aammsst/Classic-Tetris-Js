@@ -281,7 +281,7 @@ function moveDetec(sx, ex, sy, ey, col) {
 function mobileHMove(col) {
     let i = 0;
     let correction = 1;
-    switch (currIdx) {
+    switch (currPiece) {
         case 0:
             if (currRot == 3)
                 correction = 2;
