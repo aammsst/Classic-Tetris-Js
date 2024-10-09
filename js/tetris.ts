@@ -1,4 +1,3 @@
-let nextRandom: number;
 let timerId: number | undefined;
 let score = 0;
 let lineCounter = 0;
@@ -77,6 +76,8 @@ let currIdx = -1;
 let currRot = initialRot;
 let currPos = initialPos;
 let currBatch: number[] = new Array(7);
+let currPiece: number;
+let nextPiece: number;
 let curr: number[];
 // select random tetrominos
 // let random = Math.floor(Math.random()*tetrominos.length);
@@ -85,10 +86,12 @@ let curr: number[];
 // gen random {{{
 function getBatch(lastIdx = -1) {
     let batch: number[] = new Array(7);
-    let random = Math.floor(Math.random()*7);
+    batch.fill(-1);
+    let random;
 
     // first piece generation
     if (lastIdx == -1) {
+        random = Math.floor(Math.random()*7);
         batch[0] = random; 
 
     } else {
@@ -99,32 +102,34 @@ function getBatch(lastIdx = -1) {
         } while (random == 1 || random == 5);
     }
 
+    let j = 0;
     for (let i=1; i<7; i++) {
         do {
+            j++;
             random = Math.floor(Math.random()*7);
-        } while (batch.indexOf(random) != -1)
+        } while ((batch.indexOf(random) != -1) && j<10);
         batch[i] = random; 
     }
     return batch;
 }
 
-function getNextRand(): number {
+function setNextRand() {
     // manages batch of random idx and
     // returns next random idx
-    if (nextIdx == -1) {
-        // first generation of rand pieces
-        currBatch = getBatch();
-        nextIdx++;
-        currIdx = nextIdx
-        curr = tetrominos[currIdx][currRot]
-        return nextIdx;
-    } else if (nextIdx == 6) {
-        currBatch = getBatch(currBatch[6]);
-        nextIdx = 0;
-        return nextIdx;
-    } else {
-        nextIdx++;
-        return nextIdx;
+    switch (nextIdx) {
+        case -1:
+            // first generation of rand pieces
+            currBatch = getBatch();
+            nextIdx = 1;
+            break;
+        case 6:
+            // gen next batch of pices
+            currBatch = getBatch(currBatch[6]);
+            nextIdx = 0;
+            break;
+        default:
+            nextIdx++;
+            break;
     }
 }
 // }}}
@@ -133,20 +138,22 @@ function getNextRand(): number {
 // reset on restart
 function reset() {
     nextIdx = -1;
+    // currBatch = new Array(7);
+    setNextRand(); // updates nextIdx and generates next batch if necesary
+    nextPiece = currBatch[nextIdx];
     currRot = initialRot;
     currPos = initialPos;
-    currBatch = new Array(7);
-    currIdx = getNextRand();
-    nextIdx = getNextRand();
-    curr = tetrominos[currIdx][initialRot];
+    currIdx = 0;
+    currPiece = currBatch[currIdx];
+    curr = tetrominos[currPiece][currRot];
 }
 
 // drawing tetrominos
 function draw() {
     curr.forEach(index => {
         squares[currPos + index].classList.add('tetrominos');
-        squares[currPos + index].style.backgroundColor = colors[currIdx];
-        squares[currPos + index].style.borderColor = colors[currIdx];
+        squares[currPos + index].style.backgroundColor = colors[currPiece];
+        squares[currPos + index].style.borderColor = colors[currPiece];
     })
 }
 
@@ -181,9 +188,11 @@ function freeze(): boolean {
     if (curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         curr.forEach(index => squares[currPos + index].classList.add('taken'));
         currIdx = nextIdx;
-        nextIdx = getNextRand();
+        currPiece = nextPiece;
+        setNextRand(); // updates nextIdx and generates next batch if necesary
         currRot = initialRot;
-        curr = tetrominos[currIdx][initialRot];
+        curr = tetrominos[currPiece][currRot];
+        nextPiece = currBatch[nextIdx];
         currPos = initialPos;
         addScore();
         draw();
@@ -235,7 +244,7 @@ function rotateCW() {
         currRot++;
 
     } else if (rightEdge) {
-        switch (currIdx) {
+        switch (currPiece) {
             case 0:
                 // l
                 if (currRot != 1) {
@@ -274,7 +283,7 @@ function rotateCW() {
                 break;
         }
     } else if (leftEdge) {
-        switch (currIdx) {
+        switch (currPiece) {
             case 0:
                 // l
                 if (currRot != 3) {
@@ -322,12 +331,12 @@ function rotateCW() {
         currRot = 0;
     }
 
-    curr = tetrominos[currIdx][currRot];
+    curr = tetrominos[currPiece][currRot];
     // overlapping check
     const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
     if (check) {
         currRot--;
-        curr = tetrominos[currIdx][currRot];
+        curr = tetrominos[currPiece][currRot];
     }
 
     draw();
@@ -342,7 +351,7 @@ function rotateCCW() {
     if (!rightEdge && !leftEdge) {
         currRot--;
     } else if (rightEdge) {
-        switch (currIdx) {
+        switch (currPiece) {
             case 0:
                 // l
                 if (currRot != 1) {
@@ -382,7 +391,7 @@ function rotateCCW() {
         }
 
     } else if (leftEdge) {
-        switch (currIdx) {
+        switch (currPiece) {
             case 0:
                 // l
                 if (currRot != 3) {
@@ -430,12 +439,12 @@ function rotateCCW() {
         currRot = 3;
     }
 
-    curr = tetrominos[currIdx][currRot];
+    curr = tetrominos[currPiece][currRot];
     // overlapping check
     const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
     if (check) {
         currRot++;
-        curr = tetrominos[currIdx][currRot];
+        curr = tetrominos[currPiece][currRot];
     }
 
     draw();
@@ -492,11 +501,11 @@ function displayShape() {
         square.classList.remove('tetrominos');
         square.style.backgroundColor = '';
         square.style.borderColor = '';
-    })
-    upNextTetrominoes[nextIdx].forEach(index => {
+    });
+    upNextTetrominoes[nextPiece].forEach(index => {
         displaySq[displayIndex + index].classList.add('tetrominos');
-        displaySq[displayIndex + index].style.backgroundColor = colors[nextIdx];
-        displaySq[displayIndex + index].style.borderColor = colors[nextIdx];
-    })
+        displaySq[displayIndex + index].style.backgroundColor = colors[nextPiece];
+        displaySq[displayIndex + index].style.borderColor = colors[nextPiece];
+    });
 };
 // }}}

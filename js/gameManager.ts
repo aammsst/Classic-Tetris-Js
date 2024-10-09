@@ -131,6 +131,10 @@ function initBtns() {
 }
 // }}}
 
+let setTimerID = () => {
+    timerId = setInterval(moveDown, 500);
+}
+
 // start fn {{{
 function startGame() {
     gameMan.stat = gameStatus.Started;
@@ -140,10 +144,10 @@ function startGame() {
     grid!.addEventListener("touchstart",mobileMoveStart)
     grid!.addEventListener("touchend",mobileMoveEnd)
     timerId = setInterval(moveDown, 500);
-    nextRandom = getNextRand();
-    draw();
+    reset();
     displayShape();
     displayShapeMob();
+    draw();
     pauseBtn!.style.display = "block";
     startBtn!.style.display = "none";
 }
@@ -167,7 +171,6 @@ function restartGame() {
     grid!.addEventListener("touchstart",mobileMoveStart)
     grid!.addEventListener("touchend",mobileMoveEnd)
     timerId = setInterval(moveDown, 500);
-    nextRandom = getNextRand();
     score = 0;
     scoreDisplay!.innerHTML = score.toString();
     lineCounter = 0;
@@ -180,6 +183,7 @@ function restartGame() {
     gameMan.stat = gameStatus.Started;
     reset();
     displayShape();
+    displayShapeMob();
     draw();
     restartBtn!.style.display = "none";
 }
