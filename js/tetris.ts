@@ -1,6 +1,7 @@
 let timerId: number | undefined;
 let score = 0;
 let lineCounter = 0;
+let isDrawn = false;
 
 const colors = [
 	'#feac4e',
@@ -155,6 +156,7 @@ function draw() {
         squares[currPos + index].style.backgroundColor = colors[currPiece];
         squares[currPos + index].style.borderColor = colors[currPiece];
     })
+    isDrawn = true;
 }
 
 // undrawing tetrominos
@@ -164,10 +166,15 @@ function undraw() {
         squares[currPos + index].style.borderColor = '';
         squares[currPos + index].classList.remove('tetrominos');
     })
+    isDrawn = false;
 }
 
 // move down
 function moveDown() {
+    if (!isDrawn) {
+        return;
+    }
+
     if (!freeze()) {
         undraw();
         currPos += width;
