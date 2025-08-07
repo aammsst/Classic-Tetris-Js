@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "outFile": "tetris.js",
-    "target": "es6",                                  
-    "lib": ["es6", "dom"],
+    "target": "es2015",                                  
+    "lib": ["es2015", "dom"],
     "module": "amd",
     "resolveJsonModule": false,
     "allowJs": true,
@@ -11,6 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

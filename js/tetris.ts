@@ -80,41 +80,32 @@ let currBatch: number[] = new Array(7);
 let currPiece: number;
 let nextPiece: number;
 let curr: number[];
-// select random tetrominos
-// let random = Math.floor(Math.random()*tetrominos.length);
-// let current = tetrominos[random][initialRot];
 
 // gen random {{{
-function getBatch(lastIdx = -1) {
-    let batch: number[] = new Array(7);
-    batch.fill(-1);
+function getBatch(lastIdx = -1): number[] {
     let random;
 
-    // first piece generation
-    if (lastIdx == -1) {
-        random = Math.floor(Math.random()*7);
-        batch[0] = random; 
+    const set = new Set<number>();
 
-    } else {
-        // protection against ss, zz, szsz or zszs paterns
+    // protection against ss, zz, szsz or zszs paterns
+    // z = 1, s = 5
+    if (lastIdx == 1 || lastIdx == 5) {
         do {
-            random = Math.floor(Math.random()*7);
-            batch[0] = random; 
+            random = Math.floor(Math.random() * 7);
+
         } while (random == 1 || random == 5);
+        set.add(random);
     }
 
-    let j = 0;
-    for (let i=1; i<7; i++) {
-        do {
-            j++;
-            random = Math.floor(Math.random()*7);
-        } while ((batch.indexOf(random) != -1) && j<10);
-        batch[i] = random; 
-    }
-    return batch;
+    do {
+        random = Math.floor(Math.random() * 7);
+        set.add(random);
+    } while (set.size < 7);
+
+    return Array.from(set);
 }
 
-function setNextRand() {
+function setNextRand(): void {
     // manages batch of random idx and
     // returns next random idx
     switch (nextIdx) {

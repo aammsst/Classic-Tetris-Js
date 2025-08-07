@@ -477,28 +477,19 @@ let currPiece;
 let nextPiece;
 let curr;
 function getBatch(lastIdx = -1) {
-    let batch = new Array(7);
-    batch.fill(-1);
     let random;
-    if (lastIdx == -1) {
-        random = Math.floor(Math.random() * 7);
-        batch[0] = random;
-    }
-    else {
+    const set = new Set();
+    if (lastIdx == 1 || lastIdx == 5) {
         do {
             random = Math.floor(Math.random() * 7);
-            batch[0] = random;
         } while (random == 1 || random == 5);
+        set.add(random);
     }
-    let j = 0;
-    for (let i = 1; i < 7; i++) {
-        do {
-            j++;
-            random = Math.floor(Math.random() * 7);
-        } while ((batch.indexOf(random) != -1) && j < 10);
-        batch[i] = random;
-    }
-    return batch;
+    do {
+        random = Math.floor(Math.random() * 7);
+        set.add(random);
+    } while (set.size < 7);
+    return Array.from(set);
 }
 function setNextRand() {
     switch (nextIdx) {
