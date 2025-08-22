@@ -18,21 +18,18 @@ let buttons: HTMLElement[] | null;
 let fullSBtn: HTMLElement | null;
 let mobInstr: HTMLElement | null = null;
 
-enum gameStatus {
-    Unstarted,
-    Started,
-    GameOver,
-    Paused,
-}
+type gameStatus = "Unstarted" | "Started" | "GameOver" | "Paused";
 
 type game = {
-    stat: gameStatus;
+    status: gameStatus;
+    isMobile: boolean;
     score: number;
     lines: number;
 }
 
-let gameMan: game = {
-    stat: gameStatus.Unstarted,
+let gameManager: game = {
+    status: "Unstarted",
+    isMobile: false,
     score: 0,
     lines: 0,
 }
@@ -57,6 +54,8 @@ document.addEventListener('DOMContentLoaded',() => {
     if (navigator.maxTouchPoints > 0 &&
        window.innerWidth < window.innerHeight) {
         (document.querySelector(".instructions") as HTMLElement).style.display="none";
+
+        gameManager.isMobile = true;
 
         // generate btns for mobile
         btns.classList.add("mobBtns");
@@ -137,12 +136,15 @@ let setTimerID = () => {
 
 // start fn {{{
 function startGame() {
-    gameMan.stat = gameStatus.Started;
+    gameManager.status = "Started";
     gameMenu!.style.display = "none";
-    document.addEventListener('keydown',control);
-    document.addEventListener('keyup',controlR);
-    grid!.addEventListener("touchstart",mobileMoveStart)
-    grid!.addEventListener("touchend",mobileMoveEnd)
+    if (gameManager.isMobile) {
+        grid?.addEventListener("touchstart",mobileMoveStart)
+        grid?.addEventListener("touchend",mobileMoveEnd)
+    } else {
+        document.addEventListener('keydown',control);
+        document.addEventListener('keyup',controlR);
+    }
     timerId = setInterval(moveDown, 500);
     reset();
     displayShape();
@@ -166,21 +168,24 @@ function restartGame() {
         squares[i].style.borderColor = '';
     }
     pauseBtn!.style.display = "block";
-    document.addEventListener('keydown',control);
-    document.addEventListener('keyup',controlR);
-    grid!.addEventListener("touchstart",mobileMoveStart)
-    grid!.addEventListener("touchend",mobileMoveEnd)
+    if (gameManager.isMobile) {
+        grid?.addEventListener("touchstart",mobileMoveStart)
+        grid?.addEventListener("touchend",mobileMoveEnd)
+    } else {
+        document.addEventListener('keydown',control);
+        document.addEventListener('keyup',controlR);
+    }
     timerId = setInterval(moveDown, 500);
     score = 0;
     scoreDisplay!.innerHTML = score.toString();
     lineCounter = 0;
     lines!.innerHTML = lineCounter.toString();
-    if (gameMan.stat == gameStatus.GameOver) {
+    if (gameManager.status == "GameOver") {
         gameMenu!.style.display = "none";
         gameMenu!.removeChild(lastLine!);
         gameMenu!.removeChild(lastScore!);
     }
-    gameMan.stat = gameStatus.Started;
+    gameManager.status = "Started";
     reset();
     displayShape();
     displayShapeMob();
@@ -191,14 +196,17 @@ function restartGame() {
 
 // pause fn {{{
 function togglePause() {
-    if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
+    if (gameManager.status != "GameOver" && timerId && grid) {
         // pause
-        gameMan.stat = gameStatus.Paused;
+        gameManager.status = "Paused";
         clearInterval(timerId);
-        document.removeEventListener('keyup',controlR);
-        document.removeEventListener('keydown',control);
-        grid!.removeEventListener("touchstart",mobileMoveStart);
-        grid!.removeEventListener("touchend",mobileMoveEnd);
+        if (gameManager.isMobile) {
+            grid?.removeEventListener("touchstart",mobileMoveStart);
+            grid?.removeEventListener("touchend",mobileMoveEnd);
+        } else {
+            document.removeEventListener('keyup',controlR);
+            document.removeEventListener('keydown',control);
+        }
         timerId = 0;
         pauseBtn!.innerText = "Continue";
         gMenuTxt!.innerText = "-- Pause --";
@@ -206,14 +214,17 @@ function togglePause() {
         restartBtn!.style.display = "block";
     } else {
         // unpause
-        gameMan.stat = gameStatus.Started;
+        gameManager.status = "Started";
         gameMenu!.style.display = "none";
         restartBtn!.style.display = "none";
         draw();
-        document.addEventListener('keydown',control);
-        document.addEventListener('keyup',controlR);
-        grid!.addEventListener("touchstart",mobileMoveStart)
-        grid!.addEventListener("touchend",mobileMoveEnd)
+        if (gameManager.isMobile) {
+            grid?.addEventListener("touchstart",mobileMoveStart)
+            grid?.addEventListener("touchend",mobileMoveEnd)
+        } else {
+            document.addEventListener('keydown',control);
+            document.addEventListener('keyup',controlR);
+        }
         timerId = setInterval(moveDown, 500);
         pauseBtn!.innerText = "Puase";
     }
@@ -238,16 +249,19 @@ function addScore() {
             scoreDisplay!.innerHTML = score.toString();
             lineCounter += 4;
             lines!.innerHTML = lineCounter.toString();
+
             // removing lines
-            tetrisRow.forEach(index => {
+            tetrisRow.forEach( (index) => {
                 squares[index].classList.remove('taken','tetrominos');
                 squares[index].style.backgroundColor = '';
                 squares[index].style.borderColor = '';
             })
+
             // adding new lines at the top
             const squaresRemoved = squares.splice(i, width*4);
             squares = squaresRemoved.concat(squares);
             squares.forEach(cell => grid!.appendChild(cell));
+
         } else if (row.every(index => squares[index].classList.contains('taken'))) {
             // single, double and triple scores
             score += 10;
@@ -272,7 +286,7 @@ function addScore() {
 // game over {{{
 function gameOver() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-        gameMan.stat = gameStatus.GameOver;
+        gameManager.status = "GameOver";
         restartBtn!.style.display = "block";
         pauseBtn!.style.display = "none";
         lastScore!.textContent = "Score: " + score;
@@ -287,8 +301,10 @@ function gameOver() {
         }
         gameMenu!.style.display = "block";
         clearInterval(timerId);
-        document.removeEventListener('keydown',control);
-        document.removeEventListener('keyup',controlR);
+        if (!gameManager.isMobile) {
+            document.removeEventListener('keydown',control);
+            document.removeEventListener('keyup',controlR);
+        }
     }
 }
 // }}}

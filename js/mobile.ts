@@ -150,7 +150,7 @@ function menusToFS() {
 
 function displayShapeMob() {
 
-    if (gameMan.stat != gameStatus.Started) {
+    if (gameManager.status != "Started") {
         return;
     }
 
@@ -169,7 +169,7 @@ function displayShapeMob() {
 function mobileEvents() {
     document.addEventListener('visibilitychange', e => {
         e.preventDefault();
-        if (gameMan.stat == gameStatus.Started) {
+        if (gameManager.status == "Started") {
             togglePause();
         }
         if (document.fullscreenElement) {
@@ -178,7 +178,7 @@ function mobileEvents() {
     });
     window.addEventListener('popstate', e => {
         e.preventDefault();
-        if (gameMan.stat == gameStatus.Started) {
+        if (gameManager.status == "Started") {
             togglePause();
         }
         if (document.fullscreenElement) {
