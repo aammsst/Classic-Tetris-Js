@@ -61,11 +61,17 @@ html{
     margin: auto;
 }
 
-.gMenuTxt {
+.menuTxt {
     display: block;
     margin-top: 80%;
     color: #ebf6f7;
     height: fit-content;
+    text-align: center;
+}
+
+.optionsTxt {
+    display: block;
+    color: #ebf6f7;
     text-align: center;
 }
 
@@ -81,11 +87,18 @@ html{
     overflow: hidden;
 }
 
-.grid div{
+.cell {
     height: 4%;
     width: 10%;
     box-sizing: border-box;
+}
+
+.cell-with-grid {
     border: solid 0.5px #111;
+}
+
+.cell-without-grid {
+    border: none;
 }
 
 .tetrominos{
@@ -161,6 +174,10 @@ html{
     display: block;
 }
 
+#options-button{
+    display: block;
+}
+
 #pause-button {
     display: none;
 }
@@ -221,7 +238,7 @@ html{
 
 .mobBtns {
     position: absolute;
-    top: 62%;
+    top: 55%;
     left: 0;
     right: 0;
 }

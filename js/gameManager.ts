@@ -1,5 +1,7 @@
 let gameMenu: HTMLElement | null;
-let gMenuTxt: HTMLElement | null;
+let menuTxt: HTMLElement | null;
+let optionsMenu: HTMLElement | null;
+let optionsTxt: HTMLElement | null;
 let grid: HTMLElement | null;
 let miniGridMob: HTMLElement | null;
 let squares: HTMLElement[];
@@ -7,6 +9,8 @@ let lastLine: HTMLElement | null;
 let lastScore: HTMLElement | null;
 let lines: HTMLElement | null;
 let startBtn: HTMLElement | null;
+let optionsBtn: HTMLElement | null;
+let backBtn: HTMLElement | null;
 let pauseBtn: HTMLElement | null;
 let restartBtn: HTMLElement | null;
 let scoreDisplay: HTMLElement | null;
@@ -40,8 +44,10 @@ let gameManager: game = {
 }
 
 document.addEventListener('DOMContentLoaded',() => {
-    gameMenu = document.querySelector(".gameMenu");
-    gMenuTxt = document.querySelector(".gMenuTxt");
+    gameMenu = document.getElementById("gameMenu");
+    menuTxt = document.getElementById("menuTxt");
+    optionsMenu = document.getElementById("optionsMenu");
+    optionsTxt = document.getElementById("optionsTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
@@ -54,6 +60,7 @@ document.addEventListener('DOMContentLoaded',() => {
     gridCont = document.getElementById("gridContainer");
     leftCont = document.getElementById("cont2");
     let btns = document.createElement("DIV");
+    let optionsBtns = document.createElement("DIV");
 
     // mobile detect
     if (navigator.maxTouchPoints > 0 &&
@@ -66,13 +73,23 @@ document.addEventListener('DOMContentLoaded',() => {
         btns.classList.add("mobBtns");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
+            <button id="options-button" type="button" class="btn">Options</button>
             <button id="pause-button" type="button" class="btn">Pause</button>
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
 
+        optionsBtns.classList.add("mobBtns");
+        // TODO: cancel, apply, restart(apply and restart) btns
+        optionsBtns.innerHTML += `
+            <button id="back-button" type="button" class="btn">Back</button>
+        `;
+
+        optionsMenu!.appendChild(optionsBtns);
         gameMenu!.appendChild(btns);
         startBtn = document.getElementById("start-button");
+        optionsBtn = document.getElementById("options-button");
+        backBtn = document.getElementById("back-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
         fullSBtn = document.getElementById("fullscreen-button");
@@ -89,6 +106,7 @@ document.addEventListener('DOMContentLoaded',() => {
                     <h4 id="mobInstrTxt">Tap to move</h4>
         `;
         gameMenu!.appendChild(mobInstr);
+
         mobileEvents();
 
     } else {
@@ -96,6 +114,7 @@ document.addEventListener('DOMContentLoaded',() => {
         btns.classList.add("buttons");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
+            <button id="options-button" type="button" class="btn">Options</button>
             <button id="pause-button" type="button" class="btn">Pause</button>
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
@@ -103,6 +122,7 @@ document.addEventListener('DOMContentLoaded',() => {
         leftCont!.appendChild(btns);
 
         startBtn = document.getElementById("start-button");
+        optionsBtn = document.getElementById("options-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
     }
@@ -116,6 +136,20 @@ function initBtns() {
     if (startBtn && grid) {
         startBtn.addEventListener('click', ()=>{
             startGame();
+        });
+    }
+
+    // options btn
+    if (optionsBtn && grid) {
+        optionsBtn.addEventListener('click', ()=>{
+            loadOptions();
+            showOptions();
+        });
+    }
+
+    if (backBtn && grid) {
+        backBtn.addEventListener("click", () => {
+            hideOptions();
         });
     }
 
@@ -206,15 +240,15 @@ function togglePause() {
         gameManager.status = "Paused";
         clearInterval(timerId);
         if (gameManager.isMobile) {
-            grid?.removeEventListener("touchstart",mobileMoveStart);
-            grid?.removeEventListener("touchend",mobileMoveEnd);
+            grid.removeEventListener("touchstart",mobileMoveStart);
+            grid.removeEventListener("touchend",mobileMoveEnd);
         } else {
             document.removeEventListener('keyup',controlR);
             document.removeEventListener('keydown',control);
         }
         timerId = 0;
         pauseBtn!.innerText = "Continue";
-        gMenuTxt!.innerText = "-- Pause --";
+        menuTxt!.innerText = "-- Pause --";
         gameMenu!.style.display = "block";
         restartBtn!.style.display = "block";
     } else {
@@ -236,6 +270,61 @@ function togglePause() {
 }
 // }}}
 
+// options {{{
+
+function showOptions() {
+    // show options
+    gameMenu!.style.display = "none";
+    restartBtn!.style.display = "none";
+    startBtn!.style.display = "none";
+    optionsBtn!.style.display = "none";
+    backBtn!.style.display = "block";
+    optionsMenu!.style.display = "block";
+}
+
+function hideOptions() {
+    if (gameManager.status == "Paused") {
+        gameMenu!.style.display = "block";
+        restartBtn!.style.display = "block";
+    } else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
+        gameMenu!.style.display = "block";
+        startBtn!.style.display = "block";
+    } else if (gameManager.status == "Unstarted") {
+        startBtn!.style.display = "block";
+    }
+    optionsBtn!.style.display = "block";
+    backBtn!.style.display = "none";
+    optionsMenu!.style.display = "none";
+}
+
+function loadOptions() {
+    // grid
+    const gridCheck = document.getElementById("grid-check-box") as HTMLInputElement;
+
+    gridCheck.addEventListener('change', () => {
+        if (gridCheck!.checked) {
+            showGrid();
+        } else {
+            hideGrid();
+        }
+    })
+}
+
+function showGrid() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        (cell as HTMLElement).classList.replace("cell-without-grid", "cell-with-grid"); 
+    });
+}
+
+function hideGrid() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        (cell as HTMLElement).classList.replace("cell-with-grid", "cell-without-grid"); 
+    });
+}
+// }}}
+
 // add score {{{
 function addScore() {
     let linesCleared = 0;
@@ -248,7 +337,6 @@ function addScore() {
 
     // identifying rows to clean
     rowsToCheck.forEach( i => {
-        console.log("would have checked for rows: ", i);
         let rowIndex = i*10;
         let row = [
             rowIndex,
@@ -312,7 +400,7 @@ function gameOver() {
         lastLine!.textContent = "Lines: " + gameManager.lines;
         lastLine!.classList.add("gameOvTxt");
         gameMenu!.appendChild(lastLine!);
-        gMenuTxt!.innerText = "Game Over";
+        menuTxt!.innerText = "Game Over";
         if (mobInstr) {
             mobInstr!.style.display = "none";
         }

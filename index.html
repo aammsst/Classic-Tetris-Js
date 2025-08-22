@@ -212,8 +212,12 @@
         </div>
         <div class="conteiner">
             <div id="gridContainer">
-                <div class="gameMenu">
-                    <h1 class="gMenuTxt"></h1>
+                <div id="gameMenu" class="gameMenu">
+                    <h1 id="menuTxt" class="menuTxt"></h1>
+                </div>
+                <div id="optionsMenu" class="gameMenu" style="display: none">
+                    <h1 id="optionsTxt" class="menuTxt">Options</h1>
+                    <p class="optionsTxt">show grid: <input type="checkbox" id="grid-check-box" checked></p>
                 </div>
                 <div class="mini-grid-mob">
                     <div></div>
@@ -234,266 +238,266 @@
                     <div></div>
                 </div>
                 <div class="grid">
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div col="0"></div>
-                    <div col="1"></div>
-                    <div col="2"></div>
-                    <div col="3"></div>
-                    <div col="4"></div>
-                    <div col="5"></div>
-                    <div col="6"></div>
-                    <div col="7"></div>
-                    <div col="8"></div>
-                    <div col="9"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
-                    <div class="taken bot"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell cell-with-grid" col="0"></div>
+                    <div class="cell cell-with-grid" col="1"></div>
+                    <div class="cell cell-with-grid" col="2"></div>
+                    <div class="cell cell-with-grid" col="3"></div>
+                    <div class="cell cell-with-grid" col="4"></div>
+                    <div class="cell cell-with-grid" col="5"></div>
+                    <div class="cell cell-with-grid" col="6"></div>
+                    <div class="cell cell-with-grid" col="7"></div>
+                    <div class="cell cell-with-grid" col="8"></div>
+                    <div class="cell cell-with-grid" col="9"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
+                    <div class="cell taken bot"></div>
                 </div>
             </div>
             <div id="cont2">

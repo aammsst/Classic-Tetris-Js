@@ -109,7 +109,8 @@ function toggleFS() {
         .then(() => {
             // set grid and menues dimensions
             gridToFS();
-            menusToFS();
+            gameMenu!.classList.replace("gameMenu", "gameMenuFS");
+            optionsMenu!.classList.replace("gameMenu", "gameMenuFS");
             // display next on full screen
             miniGridMob!.style.display = "flex";
             displayShapeMob();
@@ -139,13 +140,8 @@ function gridToFS() {
 function exitFS() {
     grid!.style.height = "500px";
     grid!.style.width = "200px";
-    gameMenu!.classList.remove("gameMenuFS");
-    gameMenu!.classList.add("gameMenu");
-}
-
-function menusToFS() {
-    gameMenu!.classList.remove("gameMenu");
-    gameMenu!.classList.add("gameMenuFS");
+    gameMenu!.classList.replace("gameMenuFS", "gameMenu");
+    optionsMenu!.classList.replace("gameMenuFS", "gameMenu");
 }
 
 function displayShapeMob() {

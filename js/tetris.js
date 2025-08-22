@@ -1,6 +1,8 @@
 "use strict";
 let gameMenu;
-let gMenuTxt;
+let menuTxt;
+let optionsMenu;
+let optionsTxt;
 let grid;
 let miniGridMob;
 let squares;
@@ -8,6 +10,8 @@ let lastLine;
 let lastScore;
 let lines;
 let startBtn;
+let optionsBtn;
+let backBtn;
 let pauseBtn;
 let restartBtn;
 let scoreDisplay;
@@ -29,8 +33,10 @@ let gameManager = {
     lines: 0,
 };
 document.addEventListener('DOMContentLoaded', () => {
-    gameMenu = document.querySelector(".gameMenu");
-    gMenuTxt = document.querySelector(".gMenuTxt");
+    gameMenu = document.getElementById("gameMenu");
+    menuTxt = document.getElementById("menuTxt");
+    optionsMenu = document.getElementById("optionsMenu");
+    optionsTxt = document.getElementById("optionsTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
@@ -43,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gridCont = document.getElementById("gridContainer");
     leftCont = document.getElementById("cont2");
     let btns = document.createElement("DIV");
+    let optionsBtns = document.createElement("DIV");
     if (navigator.maxTouchPoints > 0 &&
         window.innerWidth < window.innerHeight) {
         document.querySelector(".instructions").style.display = "none";
@@ -50,12 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
         btns.classList.add("mobBtns");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
+            <button id="options-button" type="button" class="btn">Options</button>
             <button id="pause-button" type="button" class="btn">Pause</button>
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
+        optionsBtns.classList.add("mobBtns");
+        optionsBtns.innerHTML += `
+            <button id="back-button" type="button" class="btn">Back</button>
+        `;
+        optionsMenu.appendChild(optionsBtns);
         gameMenu.appendChild(btns);
         startBtn = document.getElementById("start-button");
+        optionsBtn = document.getElementById("options-button");
+        backBtn = document.getElementById("back-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
         fullSBtn = document.getElementById("fullscreen-button");
@@ -76,12 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btns.classList.add("buttons");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
+            <button id="options-button" type="button" class="btn">Options</button>
             <button id="pause-button" type="button" class="btn">Pause</button>
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
         leftCont.appendChild(btns);
         startBtn = document.getElementById("start-button");
+        optionsBtn = document.getElementById("options-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
     }
@@ -91,6 +108,17 @@ function initBtns() {
     if (startBtn && grid) {
         startBtn.addEventListener('click', () => {
             startGame();
+        });
+    }
+    if (optionsBtn && grid) {
+        optionsBtn.addEventListener('click', () => {
+            loadOptions();
+            showOptions();
+        });
+    }
+    if (backBtn && grid) {
+        backBtn.addEventListener("click", () => {
+            hideOptions();
         });
     }
     if (pauseBtn) {
@@ -168,8 +196,8 @@ function togglePause() {
         gameManager.status = "Paused";
         clearInterval(timerId);
         if (gameManager.isMobile) {
-            grid === null || grid === void 0 ? void 0 : grid.removeEventListener("touchstart", mobileMoveStart);
-            grid === null || grid === void 0 ? void 0 : grid.removeEventListener("touchend", mobileMoveEnd);
+            grid.removeEventListener("touchstart", mobileMoveStart);
+            grid.removeEventListener("touchend", mobileMoveEnd);
         }
         else {
             document.removeEventListener('keyup', controlR);
@@ -177,7 +205,7 @@ function togglePause() {
         }
         timerId = 0;
         pauseBtn.innerText = "Continue";
-        gMenuTxt.innerText = "-- Pause --";
+        menuTxt.innerText = "-- Pause --";
         gameMenu.style.display = "block";
         restartBtn.style.display = "block";
     }
@@ -198,6 +226,53 @@ function togglePause() {
         pauseBtn.innerText = "Puase";
     }
 }
+function showOptions() {
+    gameMenu.style.display = "none";
+    restartBtn.style.display = "none";
+    startBtn.style.display = "none";
+    optionsBtn.style.display = "none";
+    backBtn.style.display = "block";
+    optionsMenu.style.display = "block";
+}
+function hideOptions() {
+    if (gameManager.status == "Paused") {
+        gameMenu.style.display = "block";
+        restartBtn.style.display = "block";
+    }
+    else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
+        gameMenu.style.display = "block";
+        startBtn.style.display = "block";
+    }
+    else if (gameManager.status == "Unstarted") {
+        startBtn.style.display = "block";
+    }
+    optionsBtn.style.display = "block";
+    backBtn.style.display = "none";
+    optionsMenu.style.display = "none";
+}
+function loadOptions() {
+    const gridCheck = document.getElementById("grid-check-box");
+    gridCheck.addEventListener('change', () => {
+        if (gridCheck.checked) {
+            showGrid();
+        }
+        else {
+            hideGrid();
+        }
+    });
+}
+function showGrid() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        cell.classList.replace("cell-without-grid", "cell-with-grid");
+    });
+}
+function hideGrid() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        cell.classList.replace("cell-with-grid", "cell-without-grid");
+    });
+}
 function addScore() {
     let linesCleared = 0;
     let rowsToCheck = new Set;
@@ -205,7 +280,6 @@ function addScore() {
         rowsToCheck.add(Math.floor((i + currPos) / 10));
     });
     rowsToCheck.forEach(i => {
-        console.log("would have checked for rows: ", i);
         let rowIndex = i * 10;
         let row = [
             rowIndex,
@@ -258,7 +332,7 @@ function gameOver() {
         lastLine.textContent = "Lines: " + gameManager.lines;
         lastLine.classList.add("gameOvTxt");
         gameMenu.appendChild(lastLine);
-        gMenuTxt.innerText = "Game Over";
+        menuTxt.innerText = "Game Over";
         if (mobInstr) {
             mobInstr.style.display = "none";
         }
@@ -363,7 +437,8 @@ function toggleFS() {
         gridCont.requestFullscreen()
             .then(() => {
             gridToFS();
-            menusToFS();
+            gameMenu.classList.replace("gameMenu", "gameMenuFS");
+            optionsMenu.classList.replace("gameMenu", "gameMenuFS");
             miniGridMob.style.display = "flex";
             displayShapeMob();
             window.history.pushState({ page: 1 }, 'Full Screen');
@@ -388,12 +463,8 @@ function gridToFS() {
 function exitFS() {
     grid.style.height = "500px";
     grid.style.width = "200px";
-    gameMenu.classList.remove("gameMenuFS");
-    gameMenu.classList.add("gameMenu");
-}
-function menusToFS() {
-    gameMenu.classList.remove("gameMenu");
-    gameMenu.classList.add("gameMenuFS");
+    gameMenu.classList.replace("gameMenuFS", "gameMenu");
+    optionsMenu.classList.replace("gameMenuFS", "gameMenu");
 }
 function displayShapeMob() {
     if (gameManager.status != "Started") {
