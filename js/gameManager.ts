@@ -18,6 +18,11 @@ let buttons: HTMLElement[] | null;
 let fullSBtn: HTMLElement | null;
 let mobInstr: HTMLElement | null = null;
 
+const singleScore = 10;
+const doubleScore = 25;
+const tripleScore = 40;
+const tetrisScore = 80;
+
 type gameStatus = "Unstarted" | "Started" | "GameOver" | "Paused";
 
 type game = {
@@ -233,53 +238,65 @@ function togglePause() {
 
 // add score {{{
 function addScore() {
-    for(let i = 0; i < 249; i += width) {
-        // single, double, and triple detector
-        let row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9];
+    let linesCleared = 0;
 
-        // tetris (four lines) detector
-        let tetrisRow = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9,
-            i+width, i+width+1, i+width+2, i+width+3, i+width+4, i+width+5, i+width+6, i+width+7, i+width+8, i+width+9,
-        i+width*2, i+width*2+1, i+width*2+2, i+width*2+3, i+width*2+4, i+width*2+5, i+width*2+6, i+width*2+7, i+width*2+8, i+width*2+9,
-        i+width*3, i+width*3+1, i+width*3+2, i+width*3+3, i+width*3+4, i+width*3+5, i+width*3+6, i+width*3+7, i+width*3+8, i+width*3+9];
+    // identifying rows
+    let rowsToCheck = new Set<number>;
+    tetrominos[currPiece][currRot].forEach( i => {
+        rowsToCheck.add(Math.floor( (i+currPos) / 10 ));
+    })
 
-        if (i<211 && tetrisRow.every(index => squares[index].classList.contains('taken'))) {
-            // tetris score
-            gameManager.score += 60;
-            scoreDisplay!.innerHTML = gameManager.score.toString();
-            gameManager.lines += 4;
-            lines!.innerHTML = gameManager.lines.toString();
+    // identifying rows to clean
+    rowsToCheck.forEach( i => {
+        console.log("would have checked for rows: ", i);
+        let rowIndex = i*10;
+        let row = [
+            rowIndex,
+            rowIndex+1,
+            rowIndex+2,
+            rowIndex+3,
+            rowIndex+4,
+            rowIndex+5,
+            rowIndex+6,
+            rowIndex+7,
+            rowIndex+8,
+            rowIndex+9
+        ];
+
+        if (row.every(index => squares[index].classList.contains('taken'))) {
+            linesCleared++;
 
             // removing lines
-            tetrisRow.forEach( (index) => {
+            row.forEach( index => {
                 squares[index].classList.remove('taken','tetrominos');
                 squares[index].style.backgroundColor = '';
                 squares[index].style.borderColor = '';
-            })
+            });
 
             // adding new lines at the top
-            const squaresRemoved = squares.splice(i, width*4);
-            squares = squaresRemoved.concat(squares);
-            squares.forEach(cell => grid!.appendChild(cell));
-
-        } else if (row.every(index => squares[index].classList.contains('taken'))) {
-            // single, double and triple scores
-            gameManager.score += 10;
-            scoreDisplay!.innerHTML = gameManager.score.toString();
-            gameManager.lines += 1;
-            lines!.innerHTML = gameManager.lines.toString();
-            // removing lines
-            row.forEach(index => {
-                squares[index].classList.remove('taken','tetrominos');
-                squares[index].style.backgroundColor = '';
-                squares[index].style.borderColor = '';
-            })
-            // adding new lines at the top
-            const squaresRemoved = squares.splice(i, width);
+            const squaresRemoved = squares.splice(rowIndex, width);
             squares = squaresRemoved.concat(squares);
             squares.forEach(cell => grid!.appendChild(cell));
         }
+    })
+    
+    // Updating Lines and Score
+    // TODO: combos
+    switch (linesCleared) {
+        case 0:
+            return;
+        case 1:
+            gameManager.score += singleScore;
+        case 2:
+            gameManager.score += doubleScore;
+        case 3:
+            gameManager.score += tripleScore;
+        case 4:
+            gameManager.score += tetrisScore;
     }
+    gameManager.lines += linesCleared;
+    scoreDisplay!.innerHTML = gameManager.score.toString();
+    lines!.innerHTML = gameManager.lines.toString();
 }
 // }}}
 

@@ -195,6 +195,7 @@ function hardDrop() {
 function freeze(): boolean {
     if (curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         curr.forEach(index => squares[currPos + index].classList.add('taken'));
+        addScore();
         currIdx = nextIdx;
         currPiece = nextPiece;
         setNextRand(); // updates nextIdx and generates next batch if necesary
@@ -202,7 +203,6 @@ function freeze(): boolean {
         curr = tetrominos[currPiece][currRot];
         nextPiece = currBatch[nextIdx];
         currPos = initialPos;
-        addScore();
         draw();
         if (document.fullscreenElement){
             displayShapeMob();
