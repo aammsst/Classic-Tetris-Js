@@ -14,6 +14,7 @@ let optionsBtn;
 let backBtn;
 let pauseBtn;
 let restartBtn;
+let gameBtns;
 let scoreDisplay;
 let displaySq;
 let displaySqMob;
@@ -22,6 +23,9 @@ let leftCont;
 let buttons;
 let fullSBtn;
 let mobInstr = null;
+let hardDropBtn;
+let rotCWBtn;
+let rotCCWBtn;
 const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
@@ -49,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gridCont = document.getElementById("gridContainer");
     leftCont = document.getElementById("cont2");
     let btns = document.createElement("DIV");
+    gameBtns = document.createElement("DIV");
     let optionsBtns = document.createElement("DIV");
     if (navigator.maxTouchPoints > 0 &&
         window.innerWidth < window.innerHeight) {
@@ -62,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
-        optionsBtns.classList.add("mobBtns");
         optionsBtns.innerHTML += `
             <button id="back-button" type="button" class="btn">Back</button>
         `;
@@ -85,6 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h4 id="mobInstrTxt">Tap to move</h4>
         `;
         gameMenu.appendChild(mobInstr);
+        gameBtns.classList.add("in-game-btn-container");
+        gameBtns.innerHTML += `
+            <button id="rotate-cw-button" type="button" class="in-game-btn"></button>
+            <button id="rotate-ccw-button" type="button" class="in-game-btn"></button>
+            <button id="hard-drop-button" type="button" class="in-game-btn"></button>
+        `;
+        gridCont.appendChild(gameBtns);
+        hardDropBtn = document.getElementById("hard-drop-button");
+        rotCWBtn = document.getElementById("rotate-cw-button");
+        rotCCWBtn = document.getElementById("rotate-ccw-button");
+        gameBtns.style.display = "none";
         mobileEvents();
     }
     else {
@@ -131,6 +146,15 @@ function initBtns() {
             restartGame();
         });
     }
+    if (hardDropBtn) {
+        hardDropBtn.addEventListener('touchstart', hardDrop);
+    }
+    if (rotCWBtn && grid) {
+        rotCWBtn.addEventListener('touchstart', rotateCW);
+    }
+    if (rotCCWBtn && grid) {
+        rotCCWBtn.addEventListener('touchstart', rotateCCW);
+    }
 }
 let setTimerID = () => {
     timerId = setInterval(moveDown, 500);
@@ -139,6 +163,7 @@ function startGame() {
     gameManager.status = "Started";
     gameMenu.style.display = "none";
     if (gameManager.isMobile) {
+        gameBtns.style.display = "block";
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
     }
@@ -156,6 +181,7 @@ function startGame() {
 }
 function restartGame() {
     gameMenu.style.display = "none";
+    gameBtns.style.display = "block";
     if (mobInstr) {
         mobInstr.style.display = "flex";
     }
@@ -193,6 +219,7 @@ function restartGame() {
 }
 function togglePause() {
     if (gameManager.status != "GameOver" && timerId && grid) {
+        gameBtns.style.display = "none";
         gameManager.status = "Paused";
         clearInterval(timerId);
         if (gameManager.isMobile) {
@@ -210,6 +237,7 @@ function togglePause() {
         restartBtn.style.display = "block";
     }
     else {
+        gameBtns.style.display = "block";
         gameManager.status = "Started";
         gameMenu.style.display = "none";
         restartBtn.style.display = "none";
@@ -260,6 +288,35 @@ function loadOptions() {
             hideGrid();
         }
     });
+    if (gameManager.isMobile) {
+        const rotCheck = document.getElementById("use-rot-check-box");
+        rotCheck.addEventListener('change', () => {
+            if (rotCheck.checked) {
+                handleBtns(true, "rotate");
+            }
+            else {
+                handleBtns(false, "rotate");
+            }
+        });
+        const hardCheck = document.getElementById("use-hard-drop-check-box");
+        hardCheck.addEventListener('change', () => {
+            if (hardCheck.checked) {
+                handleBtns(true, "hardDrop");
+            }
+            else {
+                handleBtns(false, "hardDrop");
+            }
+        });
+        const transparentCheck = document.getElementById("transparent-check-box");
+        transparentCheck.addEventListener('change', () => {
+            if (transparentCheck.checked) {
+                handleBtns(true, "transparent");
+            }
+            else {
+                handleBtns(false, "transparent");
+            }
+        });
+    }
 }
 function showGrid() {
     const cells = document.querySelectorAll(".cell");
@@ -272,6 +329,40 @@ function hideGrid() {
     cells.forEach(cell => {
         cell.classList.replace("cell-with-grid", "cell-without-grid");
     });
+}
+function handleBtns(show, kind) {
+    if (show) {
+        switch (kind) {
+            case "rotate":
+                rotCWBtn.style.display = "block";
+                rotCCWBtn.style.display = "block";
+                break;
+            case "hardDrop":
+                hardDropBtn.style.display = "block";
+                break;
+            case "transparent":
+                rotCWBtn.style.backgroundColor = "rgba(0,0,0,0)";
+                rotCCWBtn.style.backgroundColor = "rgba(0,0,0,0)";
+                hardDropBtn.style.backgroundColor = "rgba(0,0,0,0)";
+                break;
+        }
+    }
+    else {
+        switch (kind) {
+            case "rotate":
+                rotCWBtn.style.display = "none";
+                rotCCWBtn.style.display = "none";
+                break;
+            case "hardDrop":
+                hardDropBtn.style.display = "none";
+                break;
+            case "transparent":
+                rotCWBtn.style.backgroundColor = "rgba(33, 200, 33, 0.2)";
+                rotCCWBtn.style.backgroundColor = "rgba(200, 200, 33, 0.2)";
+                hardDropBtn.style.backgroundColor = "rgba(200, 33, 33, 0.2)";
+                break;
+        }
+    }
 }
 function addScore() {
     let linesCleared = 0;
@@ -324,6 +415,7 @@ function addScore() {
 function gameOver() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
         gameManager.status = "GameOver";
+        gameBtns.style.display = "none";
         restartBtn.style.display = "block";
         pauseBtn.style.display = "none";
         lastScore.textContent = "Score: " + gameManager.score;

@@ -242,3 +242,34 @@ html{
     left: 0;
     right: 0;
 }
+
+.in-game-btn-container {
+    bottom: 120px;
+    position: relative;
+    height: 0;
+}
+
+.in-game-btn {
+    border: none;
+    position: absolute;
+    width: 50%;
+    z-index: 20;
+    height: 60px;
+}
+
+#rotate-ccw-button {
+    background-color: rgba(200, 200, 33, 0.2);
+    left: 0;
+}
+
+#rotate-cw-button {
+    background-color: rgba(33, 200, 33, 0.2);
+    right: 0;
+}
+
+#hard-drop-button {
+    position: relative;
+    bottom: -60px;
+    width: 100%;
+    background-color: rgba(200, 33, 33, 0.2);
+}

@@ -2,25 +2,35 @@ let gameMenu: HTMLElement | null;
 let menuTxt: HTMLElement | null;
 let optionsMenu: HTMLElement | null;
 let optionsTxt: HTMLElement | null;
+
 let grid: HTMLElement | null;
 let miniGridMob: HTMLElement | null;
 let squares: HTMLElement[];
 let lastLine: HTMLElement | null;
 let lastScore: HTMLElement | null;
 let lines: HTMLElement | null;
+
 let startBtn: HTMLElement | null;
 let optionsBtn: HTMLElement | null;
 let backBtn: HTMLElement | null;
 let pauseBtn: HTMLElement | null;
 let restartBtn: HTMLElement | null;
+let gameBtns: HTMLElement | null;
+
 let scoreDisplay: HTMLElement | null;
 let displaySq: HTMLElement[];
 let displaySqMob: HTMLElement[];
 let gridCont: HTMLElement | null;
 let leftCont: HTMLElement | null;
+
 let buttons: HTMLElement[] | null;
 let fullSBtn: HTMLElement | null;
 let mobInstr: HTMLElement | null = null;
+
+// in game mobile buttons
+let hardDropBtn: HTMLElement | null;
+let rotCWBtn: HTMLElement | null; // clockwise
+let rotCCWBtn: HTMLElement | null; // counter-clockwise
 
 const singleScore = 10;
 const doubleScore = 25;
@@ -60,6 +70,7 @@ document.addEventListener('DOMContentLoaded',() => {
     gridCont = document.getElementById("gridContainer");
     leftCont = document.getElementById("cont2");
     let btns = document.createElement("DIV");
+    gameBtns = document.createElement("DIV");
     let optionsBtns = document.createElement("DIV");
 
     // mobile detect
@@ -79,7 +90,6 @@ document.addEventListener('DOMContentLoaded',() => {
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
 
-        optionsBtns.classList.add("mobBtns");
         // TODO: cancel, apply, restart(apply and restart) btns
         optionsBtns.innerHTML += `
             <button id="back-button" type="button" class="btn">Back</button>
@@ -106,6 +116,22 @@ document.addEventListener('DOMContentLoaded',() => {
                     <h4 id="mobInstrTxt">Tap to move</h4>
         `;
         gameMenu!.appendChild(mobInstr);
+
+        // virtual in-game buttons
+        gameBtns.classList.add("in-game-btn-container");
+        gameBtns.innerHTML += `
+            <button id="rotate-cw-button" type="button" class="in-game-btn"></button>
+            <button id="rotate-ccw-button" type="button" class="in-game-btn"></button>
+            <button id="hard-drop-button" type="button" class="in-game-btn"></button>
+        `;
+
+        gridCont!.appendChild(gameBtns);
+
+        hardDropBtn = document.getElementById("hard-drop-button");
+        rotCWBtn = document.getElementById("rotate-cw-button");
+        rotCCWBtn = document.getElementById("rotate-ccw-button");
+
+        gameBtns.style.display = "none";
 
         mobileEvents();
 
@@ -147,6 +173,7 @@ function initBtns() {
         });
     }
 
+    // in options btn
     if (backBtn && grid) {
         backBtn.addEventListener("click", () => {
             hideOptions();
@@ -166,6 +193,19 @@ function initBtns() {
             restartGame();
         })
     }
+
+    if (hardDropBtn) {
+        hardDropBtn.addEventListener('touchstart', hardDrop)
+    }
+
+    if (rotCWBtn && grid) {
+        rotCWBtn.addEventListener('touchstart', rotateCW )
+    }
+
+    if (rotCCWBtn && grid) {
+        rotCCWBtn.addEventListener('touchstart', rotateCCW)
+    }
+
 }
 // }}}
 
@@ -178,6 +218,7 @@ function startGame() {
     gameManager.status = "Started";
     gameMenu!.style.display = "none";
     if (gameManager.isMobile) {
+        gameBtns!.style.display = "block";
         grid?.addEventListener("touchstart",mobileMoveStart)
         grid?.addEventListener("touchend",mobileMoveEnd)
     } else {
@@ -197,6 +238,7 @@ function startGame() {
 // restart fn {{{
 function restartGame() {
     gameMenu!.style.display = "none";
+    gameBtns!.style.display = "block";
     if (mobInstr) {
         mobInstr.style.display = "flex";
     }
@@ -237,6 +279,7 @@ function restartGame() {
 function togglePause() {
     if (gameManager.status != "GameOver" && timerId && grid) {
         // pause
+        gameBtns!.style.display = "none";
         gameManager.status = "Paused";
         clearInterval(timerId);
         if (gameManager.isMobile) {
@@ -253,6 +296,7 @@ function togglePause() {
         restartBtn!.style.display = "block";
     } else {
         // unpause
+        gameBtns!.style.display = "block";
         gameManager.status = "Started";
         gameMenu!.style.display = "none";
         restartBtn!.style.display = "none";
@@ -308,6 +352,41 @@ function loadOptions() {
             hideGrid();
         }
     })
+
+    if (gameManager.isMobile) {
+        // use rot buttons?
+        const rotCheck = document.getElementById("use-rot-check-box") as HTMLInputElement;
+
+        rotCheck.addEventListener('change', () => {
+            if (rotCheck!.checked) {
+                handleBtns(true, "rotate");
+            } else {
+                handleBtns(false, "rotate");
+            }
+        })
+
+        // use hard-drop?
+        const hardCheck = document.getElementById("use-hard-drop-check-box") as HTMLInputElement;
+
+        hardCheck.addEventListener('change', () => {
+            if (hardCheck!.checked) {
+                handleBtns(true, "hardDrop");
+            } else {
+                handleBtns(false, "hardDrop");
+            }
+        })
+
+        // transparent buttons?
+        const transparentCheck = document.getElementById("transparent-check-box") as HTMLInputElement;
+
+        transparentCheck.addEventListener('change', () => {
+            if (transparentCheck!.checked) {
+                handleBtns(true, "transparent");
+            } else {
+                handleBtns(false, "transparent");
+            }
+        })
+    }
 }
 
 function showGrid() {
@@ -322,6 +401,42 @@ function hideGrid() {
     cells.forEach(cell => {
         (cell as HTMLElement).classList.replace("cell-with-grid", "cell-without-grid"); 
     });
+}
+
+function handleBtns(show: boolean, kind: "rotate" | "hardDrop" | "transparent") {
+    if (show) {
+        switch (kind) {
+            case "rotate":
+                rotCWBtn!.style.display = "block";
+                rotCCWBtn!.style.display = "block";
+                break;
+            case "hardDrop":
+                hardDropBtn!.style.display = "block";
+                break;
+            case "transparent":
+                rotCWBtn!.style.backgroundColor = "rgba(0,0,0,0)";
+                rotCCWBtn!.style.backgroundColor = "rgba(0,0,0,0)";
+                hardDropBtn!.style.backgroundColor = "rgba(0,0,0,0)";
+                break;
+        }
+
+    } else {
+        switch (kind) {
+            case "rotate":
+                rotCWBtn!.style.display = "none";
+                rotCCWBtn!.style.display = "none";
+                break;
+            case "hardDrop":
+                hardDropBtn!.style.display = "none";
+                break;
+            case "transparent":
+                rotCWBtn!.style.backgroundColor = "rgba(33, 200, 33, 0.2)";
+                rotCCWBtn!.style.backgroundColor = "rgba(200, 200, 33, 0.2)";
+                hardDropBtn!.style.backgroundColor = "rgba(200, 33, 33, 0.2)";
+                break;
+        }
+
+    }
 }
 // }}}
 
@@ -392,6 +507,7 @@ function addScore() {
 function gameOver() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
         gameManager.status = "GameOver";
+        gameBtns!.style.display = "none";
         restartBtn!.style.display = "block";
         pauseBtn!.style.display = "none";
         lastScore!.textContent = "Score: " + gameManager.score;
