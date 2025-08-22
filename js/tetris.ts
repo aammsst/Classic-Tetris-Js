@@ -1,6 +1,4 @@
 let timerId: number | undefined;
-let score = 0;
-let lineCounter = 0;
 let isDrawn = false;
 
 const colors = [

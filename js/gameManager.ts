@@ -176,10 +176,10 @@ function restartGame() {
         document.addEventListener('keyup',controlR);
     }
     timerId = setInterval(moveDown, 500);
-    score = 0;
-    scoreDisplay!.innerHTML = score.toString();
-    lineCounter = 0;
-    lines!.innerHTML = lineCounter.toString();
+    gameManager.score = 0;
+    scoreDisplay!.innerHTML = gameManager.score.toString();
+    gameManager.lines = 0;
+    lines!.innerHTML = gameManager.lines.toString();
     if (gameManager.status == "GameOver") {
         gameMenu!.style.display = "none";
         gameMenu!.removeChild(lastLine!);
@@ -245,10 +245,10 @@ function addScore() {
 
         if (i<211 && tetrisRow.every(index => squares[index].classList.contains('taken'))) {
             // tetris score
-            score += 60;
-            scoreDisplay!.innerHTML = score.toString();
-            lineCounter += 4;
-            lines!.innerHTML = lineCounter.toString();
+            gameManager.score += 60;
+            scoreDisplay!.innerHTML = gameManager.score.toString();
+            gameManager.lines += 4;
+            lines!.innerHTML = gameManager.lines.toString();
 
             // removing lines
             tetrisRow.forEach( (index) => {
@@ -264,10 +264,10 @@ function addScore() {
 
         } else if (row.every(index => squares[index].classList.contains('taken'))) {
             // single, double and triple scores
-            score += 10;
-            scoreDisplay!.innerHTML = score.toString();
-            lineCounter += 1;
-            lines!.innerHTML = lineCounter.toString();
+            gameManager.score += 10;
+            scoreDisplay!.innerHTML = gameManager.score.toString();
+            gameManager.lines += 1;
+            lines!.innerHTML = gameManager.lines.toString();
             // removing lines
             row.forEach(index => {
                 squares[index].classList.remove('taken','tetrominos');
@@ -289,10 +289,10 @@ function gameOver() {
         gameManager.status = "GameOver";
         restartBtn!.style.display = "block";
         pauseBtn!.style.display = "none";
-        lastScore!.textContent = "Score: " + score;
+        lastScore!.textContent = "Score: " + gameManager.score;
         lastScore!.classList.add("gameOvTxt");
         gameMenu!.appendChild(lastScore!);
-        lastLine!.textContent = "Lines: " + lineCounter;
+        lastLine!.textContent = "Lines: " + gameManager.lines;
         lastLine!.classList.add("gameOvTxt");
         gameMenu!.appendChild(lastLine!);
         gMenuTxt!.innerText = "Game Over";

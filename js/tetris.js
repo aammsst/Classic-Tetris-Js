@@ -18,15 +18,9 @@ let leftCont;
 let buttons;
 let fullSBtn;
 let mobInstr = null;
-var gameStatus;
-(function (gameStatus) {
-    gameStatus[gameStatus["Unstarted"] = 0] = "Unstarted";
-    gameStatus[gameStatus["Started"] = 1] = "Started";
-    gameStatus[gameStatus["GameOver"] = 2] = "GameOver";
-    gameStatus[gameStatus["Paused"] = 3] = "Paused";
-})(gameStatus || (gameStatus = {}));
-let gameMan = {
-    stat: gameStatus.Unstarted,
+let gameManager = {
+    status: "Unstarted",
+    isMobile: false,
     score: 0,
     lines: 0,
 };
@@ -48,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navigator.maxTouchPoints > 0 &&
         window.innerWidth < window.innerHeight) {
         document.querySelector(".instructions").style.display = "none";
+        gameManager.isMobile = true;
         btns.classList.add("mobBtns");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
@@ -109,12 +104,16 @@ let setTimerID = () => {
     timerId = setInterval(moveDown, 500);
 };
 function startGame() {
-    gameMan.stat = gameStatus.Started;
+    gameManager.status = "Started";
     gameMenu.style.display = "none";
-    document.addEventListener('keydown', control);
-    document.addEventListener('keyup', controlR);
-    grid.addEventListener("touchstart", mobileMoveStart);
-    grid.addEventListener("touchend", mobileMoveEnd);
+    if (gameManager.isMobile) {
+        grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
+        grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
+    }
+    else {
+        document.addEventListener('keydown', control);
+        document.addEventListener('keyup', controlR);
+    }
     timerId = setInterval(moveDown, 500);
     reset();
     displayShape();
@@ -135,21 +134,25 @@ function restartGame() {
         squares[i].style.borderColor = '';
     }
     pauseBtn.style.display = "block";
-    document.addEventListener('keydown', control);
-    document.addEventListener('keyup', controlR);
-    grid.addEventListener("touchstart", mobileMoveStart);
-    grid.addEventListener("touchend", mobileMoveEnd);
+    if (gameManager.isMobile) {
+        grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
+        grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
+    }
+    else {
+        document.addEventListener('keydown', control);
+        document.addEventListener('keyup', controlR);
+    }
     timerId = setInterval(moveDown, 500);
-    score = 0;
-    scoreDisplay.innerHTML = score.toString();
-    lineCounter = 0;
-    lines.innerHTML = lineCounter.toString();
-    if (gameMan.stat == gameStatus.GameOver) {
+    gameManager.score = 0;
+    scoreDisplay.innerHTML = gameManager.score.toString();
+    gameManager.lines = 0;
+    lines.innerHTML = gameManager.lines.toString();
+    if (gameManager.status == "GameOver") {
         gameMenu.style.display = "none";
         gameMenu.removeChild(lastLine);
         gameMenu.removeChild(lastScore);
     }
-    gameMan.stat = gameStatus.Started;
+    gameManager.status = "Started";
     reset();
     displayShape();
     displayShapeMob();
@@ -157,13 +160,17 @@ function restartGame() {
     restartBtn.style.display = "none";
 }
 function togglePause() {
-    if (gameMan.stat != gameStatus.GameOver && timerId && grid) {
-        gameMan.stat = gameStatus.Paused;
+    if (gameManager.status != "GameOver" && timerId && grid) {
+        gameManager.status = "Paused";
         clearInterval(timerId);
-        document.removeEventListener('keyup', controlR);
-        document.removeEventListener('keydown', control);
-        grid.removeEventListener("touchstart", mobileMoveStart);
-        grid.removeEventListener("touchend", mobileMoveEnd);
+        if (gameManager.isMobile) {
+            grid === null || grid === void 0 ? void 0 : grid.removeEventListener("touchstart", mobileMoveStart);
+            grid === null || grid === void 0 ? void 0 : grid.removeEventListener("touchend", mobileMoveEnd);
+        }
+        else {
+            document.removeEventListener('keyup', controlR);
+            document.removeEventListener('keydown', control);
+        }
         timerId = 0;
         pauseBtn.innerText = "Continue";
         gMenuTxt.innerText = "-- Pause --";
@@ -171,14 +178,18 @@ function togglePause() {
         restartBtn.style.display = "block";
     }
     else {
-        gameMan.stat = gameStatus.Started;
+        gameManager.status = "Started";
         gameMenu.style.display = "none";
         restartBtn.style.display = "none";
         draw();
-        document.addEventListener('keydown', control);
-        document.addEventListener('keyup', controlR);
-        grid.addEventListener("touchstart", mobileMoveStart);
-        grid.addEventListener("touchend", mobileMoveEnd);
+        if (gameManager.isMobile) {
+            grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
+            grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
+        }
+        else {
+            document.addEventListener('keydown', control);
+            document.addEventListener('keyup', controlR);
+        }
         timerId = setInterval(moveDown, 500);
         pauseBtn.innerText = "Puase";
     }
@@ -191,11 +202,11 @@ function addScore() {
             i + width * 2, i + width * 2 + 1, i + width * 2 + 2, i + width * 2 + 3, i + width * 2 + 4, i + width * 2 + 5, i + width * 2 + 6, i + width * 2 + 7, i + width * 2 + 8, i + width * 2 + 9,
             i + width * 3, i + width * 3 + 1, i + width * 3 + 2, i + width * 3 + 3, i + width * 3 + 4, i + width * 3 + 5, i + width * 3 + 6, i + width * 3 + 7, i + width * 3 + 8, i + width * 3 + 9];
         if (i < 211 && tetrisRow.every(index => squares[index].classList.contains('taken'))) {
-            score += 60;
-            scoreDisplay.innerHTML = score.toString();
-            lineCounter += 4;
-            lines.innerHTML = lineCounter.toString();
-            tetrisRow.forEach(index => {
+            gameManager.score += 60;
+            scoreDisplay.innerHTML = gameManager.score.toString();
+            gameManager.lines += 4;
+            lines.innerHTML = gameManager.lines.toString();
+            tetrisRow.forEach((index) => {
                 squares[index].classList.remove('taken', 'tetrominos');
                 squares[index].style.backgroundColor = '';
                 squares[index].style.borderColor = '';
@@ -205,10 +216,10 @@ function addScore() {
             squares.forEach(cell => grid.appendChild(cell));
         }
         else if (row.every(index => squares[index].classList.contains('taken'))) {
-            score += 10;
-            scoreDisplay.innerHTML = score.toString();
-            lineCounter += 1;
-            lines.innerHTML = lineCounter.toString();
+            gameManager.score += 10;
+            scoreDisplay.innerHTML = gameManager.score.toString();
+            gameManager.lines += 1;
+            lines.innerHTML = gameManager.lines.toString();
             row.forEach(index => {
                 squares[index].classList.remove('taken', 'tetrominos');
                 squares[index].style.backgroundColor = '';
@@ -222,13 +233,13 @@ function addScore() {
 }
 function gameOver() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
-        gameMan.stat = gameStatus.GameOver;
+        gameManager.status = "GameOver";
         restartBtn.style.display = "block";
         pauseBtn.style.display = "none";
-        lastScore.textContent = "Score: " + score;
+        lastScore.textContent = "Score: " + gameManager.score;
         lastScore.classList.add("gameOvTxt");
         gameMenu.appendChild(lastScore);
-        lastLine.textContent = "Lines: " + lineCounter;
+        lastLine.textContent = "Lines: " + gameManager.lines;
         lastLine.classList.add("gameOvTxt");
         gameMenu.appendChild(lastLine);
         gMenuTxt.innerText = "Game Over";
@@ -237,8 +248,10 @@ function gameOver() {
         }
         gameMenu.style.display = "block";
         clearInterval(timerId);
-        document.removeEventListener('keydown', control);
-        document.removeEventListener('keyup', controlR);
+        if (!gameManager.isMobile) {
+            document.removeEventListener('keydown', control);
+            document.removeEventListener('keyup', controlR);
+        }
     }
 }
 let moveStartX, moveEndX, moveStartY, moveEndY;
@@ -367,7 +380,7 @@ function menusToFS() {
     gameMenu.classList.add("gameMenuFS");
 }
 function displayShapeMob() {
-    if (gameMan.stat != gameStatus.Started) {
+    if (gameManager.status != "Started") {
         return;
     }
     displaySqMob.forEach(square => {
@@ -384,7 +397,7 @@ function displayShapeMob() {
 function mobileEvents() {
     document.addEventListener('visibilitychange', e => {
         e.preventDefault();
-        if (gameMan.stat == gameStatus.Started) {
+        if (gameManager.status == "Started") {
             togglePause();
         }
         if (document.fullscreenElement) {
@@ -393,7 +406,7 @@ function mobileEvents() {
     });
     window.addEventListener('popstate', e => {
         e.preventDefault();
-        if (gameMan.stat == gameStatus.Started) {
+        if (gameManager.status == "Started") {
             togglePause();
         }
         if (document.fullscreenElement) {
@@ -402,8 +415,6 @@ function mobileEvents() {
     });
 }
 let timerId;
-let score = 0;
-let lineCounter = 0;
 let isDrawn = false;
 const colors = [
     '#feac4e',
