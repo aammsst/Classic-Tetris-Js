@@ -23,6 +23,8 @@ let leftCont;
 let buttons;
 let fullSBtn;
 let mobInstr = null;
+let moveLeftBtn;
+let moveRightBtn;
 let hardDropBtn;
 let rotCWBtn;
 let rotCCWBtn;
@@ -93,11 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
         gameMenu.appendChild(mobInstr);
         gameBtns.classList.add("in-game-btn-container");
         gameBtns.innerHTML += `
-            <button id="rotate-cw-button" type="button" class="in-game-btn"></button>
-            <button id="rotate-ccw-button" type="button" class="in-game-btn"></button>
-            <button id="hard-drop-button" type="button" class="in-game-btn"></button>
+            <div id="move-left-button" class="in-game-btn"></div>
+            <div id="move-right-button" class="in-game-btn"></div>
+            <div id="rotate-cw-button" class="in-game-btn"></div>
+            <div id="rotate-ccw-button" class="in-game-btn"></div>
+            <div id="hard-drop-button" class="in-game-btn"></div>
         `;
         gridCont.appendChild(gameBtns);
+        moveRightBtn = document.getElementById("move-right-button");
+        moveLeftBtn = document.getElementById("move-left-button");
         hardDropBtn = document.getElementById("hard-drop-button");
         rotCWBtn = document.getElementById("rotate-cw-button");
         rotCCWBtn = document.getElementById("rotate-ccw-button");
@@ -149,6 +155,12 @@ function initBtns() {
         restartBtn.addEventListener('click', () => {
             restartGame();
         });
+    }
+    if (moveRightBtn) {
+        moveRightBtn.addEventListener('touchstart', moveRight);
+    }
+    if (moveLeftBtn) {
+        moveLeftBtn.addEventListener('touchstart', moveLeft);
     }
     if (hardDropBtn) {
         hardDropBtn.addEventListener('touchstart', hardDrop);
@@ -317,6 +329,15 @@ function loadOptions() {
                 handleBtns(false, "rotate");
             }
         });
+        const movementCheck = document.getElementById("use-mov-check-box");
+        movementCheck.addEventListener('change', () => {
+            if (movementCheck.checked) {
+                handleBtns(true, "movement");
+            }
+            else {
+                handleBtns(false, "movement");
+            }
+        });
         const hardCheck = document.getElementById("use-hard-drop-check-box");
         hardCheck.addEventListener('change', () => {
             if (hardCheck.checked) {
@@ -352,6 +373,10 @@ function hideGrid() {
 function handleBtns(show, kind) {
     if (show) {
         switch (kind) {
+            case "movement":
+                moveLeftBtn.style.display = "block";
+                moveRightBtn.style.display = "block";
+                break;
             case "rotate":
                 rotCWBtn.style.display = "block";
                 rotCCWBtn.style.display = "block";
@@ -360,6 +385,8 @@ function handleBtns(show, kind) {
                 hardDropBtn.style.display = "block";
                 break;
             case "transparent":
+                moveLeftBtn.style.backgroundColor = "rgba(0,0,0,0)";
+                moveRightBtn.style.backgroundColor = "rgba(0,0,0,0)";
                 rotCWBtn.style.backgroundColor = "rgba(0,0,0,0)";
                 rotCCWBtn.style.backgroundColor = "rgba(0,0,0,0)";
                 hardDropBtn.style.backgroundColor = "rgba(0,0,0,0)";
@@ -368,6 +395,10 @@ function handleBtns(show, kind) {
     }
     else {
         switch (kind) {
+            case "movement":
+                moveLeftBtn.style.display = "none";
+                moveRightBtn.style.display = "none";
+                break;
             case "rotate":
                 rotCWBtn.style.display = "none";
                 rotCCWBtn.style.display = "none";
@@ -376,6 +407,8 @@ function handleBtns(show, kind) {
                 hardDropBtn.style.display = "none";
                 break;
             case "transparent":
+                moveLeftBtn.style.backgroundColor = "rgba(33, 33, 200, 0.2)";
+                moveRightBtn.style.backgroundColor = "rgba(200, 33, 200, 0.2)";
                 rotCWBtn.style.backgroundColor = "rgba(33, 200, 33, 0.2)";
                 rotCCWBtn.style.backgroundColor = "rgba(200, 200, 33, 0.2)";
                 hardDropBtn.style.backgroundColor = "rgba(200, 33, 33, 0.2)";
@@ -572,6 +605,8 @@ function gridToFS() {
     const w = (h * 200) / 500;
     grid.style.width = w + "px";
     const inGameBtnsFSheight = ((60 * h) / 500);
+    moveLeftBtn.style.height = inGameBtnsFSheight + "px";
+    moveRightBtn.style.height = inGameBtnsFSheight + "px";
     rotCWBtn.style.height = inGameBtnsFSheight + "px";
     rotCCWBtn.style.height = inGameBtnsFSheight + "px";
     hardDropBtn.style.height = inGameBtnsFSheight + "px";
@@ -580,6 +615,8 @@ function gridToFS() {
 function exitFS() {
     grid.style.height = "500px";
     grid.style.width = "200px";
+    moveLeftBtn.style.height = "60px";
+    moveRightBtn.style.height = "60px";
     rotCWBtn.style.height = "60px";
     rotCCWBtn.style.height = "60px";
     hardDropBtn.style.height = "60px";

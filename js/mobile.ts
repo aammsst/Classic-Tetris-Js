@@ -142,6 +142,8 @@ function gridToFS() {
     // initial height = 60px
     // initial width = 50% = 100px
     const inGameBtnsFSheight = ((60 * h) / 500) 
+    moveLeftBtn!.style.height = inGameBtnsFSheight + "px";
+    moveRightBtn!.style.height = inGameBtnsFSheight + "px";
     rotCWBtn!.style.height = inGameBtnsFSheight + "px";
     rotCCWBtn!.style.height = inGameBtnsFSheight + "px"; 
     hardDropBtn!.style.height = inGameBtnsFSheight + "px"; 
@@ -151,6 +153,8 @@ function gridToFS() {
 function exitFS() {
     grid!.style.height = "500px";
     grid!.style.width = "200px";
+    moveLeftBtn!.style.height = "60px";
+    moveRightBtn!.style.height = "60px";
     rotCWBtn!.style.height = "60px";
     rotCCWBtn!.style.height = "60px"; 
     hardDropBtn!.style.height = "60px"; 

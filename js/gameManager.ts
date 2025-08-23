@@ -28,6 +28,8 @@ let fullSBtn: HTMLElement | null;
 let mobInstr: HTMLElement | null = null;
 
 // in game mobile buttons
+let moveLeftBtn: HTMLElement | null;
+let moveRightBtn: HTMLElement | null;
 let hardDropBtn: HTMLElement | null;
 let rotCWBtn: HTMLElement | null; // clockwise
 let rotCCWBtn: HTMLElement | null; // counter-clockwise
@@ -122,13 +124,17 @@ document.addEventListener('DOMContentLoaded',() => {
         // virtual in-game buttons
         gameBtns.classList.add("in-game-btn-container");
         gameBtns.innerHTML += `
-            <button id="rotate-cw-button" type="button" class="in-game-btn"></button>
-            <button id="rotate-ccw-button" type="button" class="in-game-btn"></button>
-            <button id="hard-drop-button" type="button" class="in-game-btn"></button>
+            <div id="move-left-button" class="in-game-btn"></div>
+            <div id="move-right-button" class="in-game-btn"></div>
+            <div id="rotate-cw-button" class="in-game-btn"></div>
+            <div id="rotate-ccw-button" class="in-game-btn"></div>
+            <div id="hard-drop-button" class="in-game-btn"></div>
         `;
 
         gridCont!.appendChild(gameBtns);
 
+        moveRightBtn = document.getElementById("move-right-button");
+        moveLeftBtn = document.getElementById("move-left-button");
         hardDropBtn = document.getElementById("hard-drop-button");
         rotCWBtn = document.getElementById("rotate-cw-button");
         rotCCWBtn = document.getElementById("rotate-ccw-button");
@@ -196,6 +202,15 @@ function initBtns() {
         restartBtn.addEventListener('click', ()=>{
             restartGame();
         })
+    }
+
+    // mobile in-game btns
+    if (moveRightBtn) {
+        moveRightBtn.addEventListener('touchstart', moveRight)
+    }
+
+    if (moveLeftBtn) {
+        moveLeftBtn.addEventListener('touchstart', moveLeft)
     }
 
     if (hardDropBtn) {
@@ -382,6 +397,17 @@ function loadOptions() {
             }
         })
 
+        // use movement buttons?
+        const movementCheck = document.getElementById("use-mov-check-box") as HTMLInputElement;
+
+        movementCheck.addEventListener('change', () => {
+            if (movementCheck!.checked) {
+                handleBtns(true, "movement");
+            } else {
+                handleBtns(false, "movement");
+            }
+        })
+
         // use hard-drop?
         const hardCheck = document.getElementById("use-hard-drop-check-box") as HTMLInputElement;
 
@@ -420,9 +446,13 @@ function hideGrid() {
     });
 }
 
-function handleBtns(show: boolean, kind: "rotate" | "hardDrop" | "transparent") {
+function handleBtns(show: boolean, kind: "movement" | "rotate" | "hardDrop" | "transparent") {
     if (show) {
         switch (kind) {
+            case "movement":
+                moveLeftBtn!.style.display = "block";
+                moveRightBtn!.style.display = "block";
+                break;
             case "rotate":
                 rotCWBtn!.style.display = "block";
                 rotCCWBtn!.style.display = "block";
@@ -431,6 +461,8 @@ function handleBtns(show: boolean, kind: "rotate" | "hardDrop" | "transparent") 
                 hardDropBtn!.style.display = "block";
                 break;
             case "transparent":
+                moveLeftBtn!.style.backgroundColor = "rgba(0,0,0,0)";
+                moveRightBtn!.style.backgroundColor = "rgba(0,0,0,0)";
                 rotCWBtn!.style.backgroundColor = "rgba(0,0,0,0)";
                 rotCCWBtn!.style.backgroundColor = "rgba(0,0,0,0)";
                 hardDropBtn!.style.backgroundColor = "rgba(0,0,0,0)";
@@ -439,6 +471,10 @@ function handleBtns(show: boolean, kind: "rotate" | "hardDrop" | "transparent") 
 
     } else {
         switch (kind) {
+            case "movement":
+                moveLeftBtn!.style.display = "none";
+                moveRightBtn!.style.display = "none";
+                break;
             case "rotate":
                 rotCWBtn!.style.display = "none";
                 rotCCWBtn!.style.display = "none";
@@ -447,6 +483,8 @@ function handleBtns(show: boolean, kind: "rotate" | "hardDrop" | "transparent") 
                 hardDropBtn!.style.display = "none";
                 break;
             case "transparent":
+                moveLeftBtn!.style.backgroundColor = "rgba(33, 33, 200, 0.2)";
+                moveRightBtn!.style.backgroundColor = "rgba(200, 33, 200, 0.2)";
                 rotCWBtn!.style.backgroundColor = "rgba(33, 200, 33, 0.2)";
                 rotCCWBtn!.style.backgroundColor = "rgba(200, 200, 33, 0.2)";
                 hardDropBtn!.style.backgroundColor = "rgba(200, 33, 33, 0.2)";

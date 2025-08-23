@@ -244,17 +244,19 @@ html{
 }
 
 .in-game-btn-container {
-    bottom: 120px;
+    width: 90px;
+    margin: auto;
+    bottom: 180px;
     position: relative;
     height: 0;
 }
 
 .in-game-btn-container-FS {
-    bottom: 180px;
+    width: 110px;
+    bottom: 270px;
+    margin: auto;
     position: relative;
     height: 0;
-    width: 82%;
-    margin: auto;
 }
 
 .in-game-btn {
@@ -280,4 +282,16 @@ html{
     bottom: -60px;
     width: 100%;
     background-color: rgba(200, 33, 33, 0.2);
+}
+
+#move-left-button {
+    bottom: 0;
+    background-color: rgba(33, 33, 200, 0.2);
+    left: 0;
+}
+
+#move-right-button {
+    bottom: 0;
+    background-color: rgba(200, 33, 200, 0.2);
+    right: 0;
 }
