@@ -249,6 +249,14 @@ html{
     height: 0;
 }
 
+.in-game-btn-container-FS {
+    bottom: 180px;
+    position: relative;
+    height: 0;
+    width: 82%;
+    margin: auto;
+}
+
 .in-game-btn {
     border: none;
     position: absolute;

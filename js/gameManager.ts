@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded',() => {
        window.innerWidth < window.innerHeight) {
         (document.querySelector(".instructions") as HTMLElement).style.display="none";
 
+        let mobOptions = document.getElementById("mobOptions");
+        mobOptions!.style.display = "block";
         gameManager.isMobile = true;
 
         // generate btns for mobile
@@ -141,6 +143,7 @@ document.addEventListener('DOMContentLoaded',() => {
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
             <button id="options-button" type="button" class="btn">Options</button>
+            <button id="back-button" type="button" class="btn" style="display: none">Back</button>
             <button id="pause-button" type="button" class="btn">Pause</button>
             <button id="restart-button" type="button" class="btn">Restart</button>
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
@@ -149,6 +152,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
         startBtn = document.getElementById("start-button");
         optionsBtn = document.getElementById("options-button");
+        backBtn = document.getElementById("back-button");
         pauseBtn = document.getElementById("pause-button");
         restartBtn = document.getElementById("restart-button");
     }
@@ -217,6 +221,7 @@ let setTimerID = () => {
 function startGame() {
     gameManager.status = "Started";
     gameMenu!.style.display = "none";
+    optionsBtn!.style.display = "none";
     if (gameManager.isMobile) {
         gameBtns!.style.display = "block";
         grid?.addEventListener("touchstart",mobileMoveStart)
@@ -239,6 +244,7 @@ function startGame() {
 function restartGame() {
     gameMenu!.style.display = "none";
     gameBtns!.style.display = "block";
+    optionsBtn!.style.display = "none";
     if (mobInstr) {
         mobInstr.style.display = "flex";
     }
@@ -294,12 +300,15 @@ function togglePause() {
         menuTxt!.innerText = "-- Pause --";
         gameMenu!.style.display = "block";
         restartBtn!.style.display = "block";
+        optionsBtn!.style.display = "block";
+        backBtn!.style.display = "none";
     } else {
         // unpause
         gameBtns!.style.display = "block";
         gameManager.status = "Started";
         gameMenu!.style.display = "none";
         restartBtn!.style.display = "none";
+        optionsBtn!.style.display = "none";
         draw();
         if (gameManager.isMobile) {
             grid?.addEventListener("touchstart",mobileMoveStart)
@@ -318,9 +327,16 @@ function togglePause() {
 
 function showOptions() {
     // show options
-    gameMenu!.style.display = "none";
-    restartBtn!.style.display = "none";
-    startBtn!.style.display = "none";
+    if (gameManager.status == "Paused") {
+        gameMenu!.style.display = "none";
+        pauseBtn!.style.display = "none";
+        restartBtn!.style.display = "none";
+    } else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
+        gameMenu!.style.display = "none";
+        startBtn!.style.display = "none";
+    } else if (gameManager.status == "Unstarted") {
+        startBtn!.style.display = "none";
+    }
     optionsBtn!.style.display = "none";
     backBtn!.style.display = "block";
     optionsMenu!.style.display = "block";
@@ -329,6 +345,7 @@ function showOptions() {
 function hideOptions() {
     if (gameManager.status == "Paused") {
         gameMenu!.style.display = "block";
+        pauseBtn!.style.display = "block";
         restartBtn!.style.display = "block";
     } else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
         gameMenu!.style.display = "block";

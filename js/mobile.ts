@@ -109,6 +109,7 @@ function toggleFS() {
         .then(() => {
             // set grid and menues dimensions
             gridToFS();
+            gameBtns!.classList.replace("in-game-btn-container", "in-game-btn-container-FS");
             gameMenu!.classList.replace("gameMenu", "gameMenuFS");
             optionsMenu!.classList.replace("gameMenu", "gameMenuFS");
             // display next on full screen
@@ -129,17 +130,32 @@ function toggleFS() {
 
 function gridToFS() {
     grid!.style.height = "100%";
+
     // new height in px
-    let h = window.innerHeight;
+    const h = window.innerHeight;
     // initial height = 500px
     // initial width = 200px
-    let w = (h * 200) / 500;
+    const w = (h * 200) / 500;
     grid!.style.width = w + "px";
+
+    // in-game buttons
+    // initial height = 60px
+    // initial width = 50% = 100px
+    const inGameBtnsFSheight = ((60 * h) / 500) 
+    rotCWBtn!.style.height = inGameBtnsFSheight + "px";
+    rotCCWBtn!.style.height = inGameBtnsFSheight + "px"; 
+    hardDropBtn!.style.height = inGameBtnsFSheight + "px"; 
+    hardDropBtn!.style.bottom = -inGameBtnsFSheight + "px"; 
 }
 
 function exitFS() {
     grid!.style.height = "500px";
     grid!.style.width = "200px";
+    rotCWBtn!.style.height = "60px";
+    rotCCWBtn!.style.height = "60px"; 
+    hardDropBtn!.style.height = "60px"; 
+    hardDropBtn!.style.bottom = "-60px"; 
+    gameBtns!.classList.replace("in-game-btn-container-FS", "in-game-btn-container");
     gameMenu!.classList.replace("gameMenuFS", "gameMenu");
     optionsMenu!.classList.replace("gameMenuFS", "gameMenu");
 }
