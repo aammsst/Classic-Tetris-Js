@@ -102,6 +102,30 @@ function mobileHMove(col: number) {
     }
 }
 
+// btns das
+function moveDas(mvFn: Function) {
+    if (!movementPressed) return;
+
+    // check initial das
+    if (!dasCharged) {
+        const tmpPos = currPos;
+        mvFn();
+        if (tmpPos == currPos) {
+            // piece on edge or borders
+            dasCharged = true;
+        }
+    }
+
+    if (!dasCharged) {
+        // charge das mid-air
+        dasCharged = true;
+        setTimeout(moveDas, dasSlow, mvFn);
+    } else {
+        mvFn();
+        setTimeout(moveDas, dasFast, mvFn);
+    }
+}
+
 function toggleFS() {
     if (!document.fullscreenElement) {
         fullSBtn!.innerText = "Exit FullScreen";

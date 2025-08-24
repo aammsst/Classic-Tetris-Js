@@ -28,6 +28,10 @@ let moveRightBtn;
 let hardDropBtn;
 let rotCWBtn;
 let rotCCWBtn;
+let movementPressed = false;
+let dasCharged = false;
+const dasFast = 200;
+const dasSlow = 700;
 const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
@@ -157,10 +161,24 @@ function initBtns() {
         });
     }
     if (moveRightBtn) {
-        moveRightBtn.addEventListener('touchstart', moveRight);
+        moveRightBtn.addEventListener('touchstart', () => {
+            movementPressed = true;
+            moveDas(moveRight);
+        });
+        moveRightBtn.addEventListener('touchend', () => {
+            dasCharged = false;
+            movementPressed = false;
+        });
     }
     if (moveLeftBtn) {
-        moveLeftBtn.addEventListener('touchstart', moveLeft);
+        moveLeftBtn.addEventListener('touchstart', () => {
+            movementPressed = true;
+            moveDas(moveLeft);
+        });
+        moveLeftBtn.addEventListener('touchend', () => {
+            dasCharged = false;
+            movementPressed = false;
+        });
     }
     if (hardDropBtn) {
         hardDropBtn.addEventListener('touchstart', hardDrop);
@@ -573,6 +591,25 @@ function mobileHMove(col) {
             moveRight();
             actualPos = (currPos + correction) % 10;
         } while (actualPos < col && i < 10);
+    }
+}
+function moveDas(mvFn) {
+    if (!movementPressed)
+        return;
+    if (!dasCharged) {
+        const tmpPos = currPos;
+        mvFn();
+        if (tmpPos == currPos) {
+            dasCharged = true;
+        }
+    }
+    if (!dasCharged) {
+        dasCharged = true;
+        setTimeout(moveDas, dasSlow, mvFn);
+    }
+    else {
+        mvFn();
+        setTimeout(moveDas, dasFast, mvFn);
     }
 }
 function toggleFS() {

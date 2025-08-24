@@ -33,6 +33,10 @@ let moveRightBtn: HTMLElement | null;
 let hardDropBtn: HTMLElement | null;
 let rotCWBtn: HTMLElement | null; // clockwise
 let rotCCWBtn: HTMLElement | null; // counter-clockwise
+let movementPressed = false;
+let dasCharged = false;
+const dasFast = 200;
+const dasSlow = 700;
 
 const singleScore = 10;
 const doubleScore = 25;
@@ -206,11 +210,25 @@ function initBtns() {
 
     // mobile in-game btns
     if (moveRightBtn) {
-        moveRightBtn.addEventListener('touchstart', moveRight)
+        moveRightBtn.addEventListener('touchstart', () => {
+            movementPressed = true;
+            moveDas(moveRight);
+        })
+        moveRightBtn.addEventListener('touchend', () => {
+            dasCharged = false;
+            movementPressed = false;
+        })
     }
 
     if (moveLeftBtn) {
-        moveLeftBtn.addEventListener('touchstart', moveLeft)
+        moveLeftBtn.addEventListener('touchstart', () => {
+            movementPressed = true;
+            moveDas(moveLeft);
+        })
+        moveLeftBtn.addEventListener('touchend', () => {
+            dasCharged = false;
+            movementPressed = false;
+        })
     }
 
     if (hardDropBtn) {
