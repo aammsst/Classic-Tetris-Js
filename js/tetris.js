@@ -30,8 +30,8 @@ let rotCWBtn;
 let rotCCWBtn;
 let movementPressed = false;
 let dasCharged = false;
-const dasFast = 200;
-const dasSlow = 700;
+const dasFast = 100;
+const dasSlow = 500;
 const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
@@ -169,6 +169,12 @@ function initBtns() {
             dasCharged = false;
             movementPressed = false;
         });
+        moveRightBtn.addEventListener('touchcancel', e => {
+            e.preventDefault();
+        });
+        moveRightBtn.addEventListener('touchmove', e => {
+            e.preventDefault();
+        });
     }
     if (moveLeftBtn) {
         moveLeftBtn.addEventListener('touchstart', () => {
@@ -178,6 +184,12 @@ function initBtns() {
         moveLeftBtn.addEventListener('touchend', () => {
             dasCharged = false;
             movementPressed = false;
+        });
+        moveLeftBtn.addEventListener('touchcancel', e => {
+            e.preventDefault();
+        });
+        moveLeftBtn.addEventListener('touchmove', e => {
+            e.preventDefault();
         });
     }
     if (hardDropBtn) {
