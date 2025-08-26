@@ -103,28 +103,48 @@ function mobileHMove(col: number) {
 }
 
 // btns das
-function moveDas(mvFn: Function) {
-    if (!movementPressed) return;
+function moveRightDas() {
+    if (!rightPressed || leftPressed) {
+        clearTimeout(dasTimeout);
+        return;
+    }
 
-    // check initial das
     if (!dasCharged) {
         const tmpPos = currPos;
-        mvFn();
+        moveRight();
         if (tmpPos == currPos) {
             // piece on edge or borders
             dasCharged = true;
         }
+        dasTimeout = setTimeout(moveRightDas, dasSlow);
+        dasCharged = true;
+    } else {
+        moveRight();
+        dasTimeout = setTimeout(moveRightDas, dasFast);
+    }
+}
+
+function moveLeftDas() {
+    if (!leftPressed || rightPressed) {
+        clearTimeout(dasTimeout);
+        return;
     }
 
     if (!dasCharged) {
-        // charge das mid-air
+        const tmpPos = currPos;
+        moveLeft();
+        if (tmpPos == currPos) {
+            // piece on edge or borders
+            dasCharged = true;
+        }
+        dasTimeout = setTimeout(moveLeftDas, dasSlow);
         dasCharged = true;
-        setTimeout(moveDas, dasSlow, mvFn);
     } else {
-        mvFn();
-        setTimeout(moveDas, dasFast, mvFn);
+        moveLeft();
+        dasTimeout = setTimeout(moveLeftDas, dasFast);
     }
 }
+
 
 function toggleFS() {
     if (!document.fullscreenElement) {

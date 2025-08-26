@@ -28,10 +28,12 @@ let moveRightBtn;
 let hardDropBtn;
 let rotCWBtn;
 let rotCCWBtn;
-let movementPressed = false;
+let rightPressed = false;
+let leftPressed = false;
 let dasCharged = false;
 const dasFast = 100;
 const dasSlow = 500;
+let dasTimeout;
 const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
@@ -161,35 +163,23 @@ function initBtns() {
         });
     }
     if (moveRightBtn) {
-        moveRightBtn.addEventListener('touchstart', () => {
-            movementPressed = true;
-            moveDas(moveRight);
+        moveRightBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            rightPressed = true;
+            moveRightDas();
         });
         moveRightBtn.addEventListener('touchend', () => {
-            dasCharged = false;
-            movementPressed = false;
-        });
-        moveRightBtn.addEventListener('touchcancel', e => {
-            e.preventDefault();
-        });
-        moveRightBtn.addEventListener('touchmove', e => {
-            e.preventDefault();
+            rightPressed = false;
         });
     }
     if (moveLeftBtn) {
-        moveLeftBtn.addEventListener('touchstart', () => {
-            movementPressed = true;
-            moveDas(moveLeft);
+        moveLeftBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            leftPressed = true;
+            moveLeftDas();
         });
         moveLeftBtn.addEventListener('touchend', () => {
-            dasCharged = false;
-            movementPressed = false;
-        });
-        moveLeftBtn.addEventListener('touchcancel', e => {
-            e.preventDefault();
-        });
-        moveLeftBtn.addEventListener('touchmove', e => {
-            e.preventDefault();
+            leftPressed = false;
         });
     }
     if (hardDropBtn) {
@@ -210,25 +200,23 @@ function startGame() {
     gameMenu.style.display = "none";
     optionsBtn.style.display = "none";
     if (gameManager.isMobile) {
-        gameBtns.style.display = "block";
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
     }
     else {
-        document.addEventListener('keydown', control);
-        document.addEventListener('keyup', controlR);
+        document.addEventListener('keydown', controlDown);
     }
     timerId = setInterval(moveDown, 500);
     reset();
     displayShape();
     displayShapeMob();
+    dasCharged = false;
     draw();
     pauseBtn.style.display = "block";
     startBtn.style.display = "none";
 }
 function restartGame() {
     gameMenu.style.display = "none";
-    gameBtns.style.display = "block";
     optionsBtn.style.display = "none";
     if (mobInstr) {
         mobInstr.style.display = "flex";
@@ -245,8 +233,7 @@ function restartGame() {
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
     }
     else {
-        document.addEventListener('keydown', control);
-        document.addEventListener('keyup', controlR);
+        document.addEventListener('keydown', controlDown);
     }
     timerId = setInterval(moveDown, 500);
     gameManager.score = 0;
@@ -275,8 +262,7 @@ function togglePause() {
             grid.removeEventListener("touchend", mobileMoveEnd);
         }
         else {
-            document.removeEventListener('keyup', controlR);
-            document.removeEventListener('keydown', control);
+            document.removeEventListener('keydown', controlDown);
         }
         timerId = 0;
         pauseBtn.innerText = "Continue";
@@ -298,8 +284,7 @@ function togglePause() {
             grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchend", mobileMoveEnd);
         }
         else {
-            document.addEventListener('keydown', control);
-            document.addEventListener('keyup', controlR);
+            document.addEventListener('keydown', controlDown);
         }
         timerId = setInterval(moveDown, 500);
         pauseBtn.innerText = "Puase";
@@ -513,8 +498,7 @@ function gameOver() {
         gameMenu.style.display = "block";
         clearInterval(timerId);
         if (!gameManager.isMobile) {
-            document.removeEventListener('keydown', control);
-            document.removeEventListener('keyup', controlR);
+            document.removeEventListener('keydown', controlDown);
         }
     }
 }
@@ -605,23 +589,42 @@ function mobileHMove(col) {
         } while (actualPos < col && i < 10);
     }
 }
-function moveDas(mvFn) {
-    if (!movementPressed)
+function moveRightDas() {
+    if (!rightPressed || leftPressed) {
+        clearTimeout(dasTimeout);
         return;
+    }
     if (!dasCharged) {
         const tmpPos = currPos;
-        mvFn();
+        moveRight();
         if (tmpPos == currPos) {
             dasCharged = true;
         }
-    }
-    if (!dasCharged) {
+        dasTimeout = setTimeout(moveRightDas, dasSlow);
         dasCharged = true;
-        setTimeout(moveDas, dasSlow, mvFn);
     }
     else {
-        mvFn();
-        setTimeout(moveDas, dasFast, mvFn);
+        moveRight();
+        dasTimeout = setTimeout(moveRightDas, dasFast);
+    }
+}
+function moveLeftDas() {
+    if (!leftPressed || rightPressed) {
+        clearTimeout(dasTimeout);
+        return;
+    }
+    if (!dasCharged) {
+        const tmpPos = currPos;
+        moveLeft();
+        if (tmpPos == currPos) {
+            dasCharged = true;
+        }
+        dasTimeout = setTimeout(moveLeftDas, dasSlow);
+        dasCharged = true;
+    }
+    else {
+        moveLeft();
+        dasTimeout = setTimeout(moveLeftDas, dasFast);
     }
 }
 function toggleFS() {
@@ -867,6 +870,7 @@ function hardDrop() {
 function freeze() {
     if (curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         curr.forEach(index => squares[currPos + index].classList.add('taken'));
+        clearTimeout(dasTimeout);
         addScore();
         currIdx = nextIdx;
         currPiece = nextPiece;
@@ -1081,28 +1085,28 @@ function rotateCCW() {
     }
     draw();
 }
-function control(e) {
+function controlDown(e) {
+    e.preventDefault();
     switch (e.key) {
         case 'ArrowLeft':
-            e.preventDefault();
             moveLeft();
             break;
         case 'ArrowRight':
-            e.preventDefault();
             moveRight();
             break;
         case 'ArrowDown':
-            e.preventDefault();
             moveDown();
             break;
-    }
-}
-function controlR(e) {
-    if (e.key === 'f') {
-        rotateCW();
-    }
-    else if (e.key === 'd') {
-        rotateCCW();
+        case 'f':
+            if (e.repeat)
+                return;
+            rotateCW();
+            break;
+        case 'd':
+            if (e.repeat)
+                return;
+            rotateCCW();
+            break;
     }
 }
 let displayWidth = 4;

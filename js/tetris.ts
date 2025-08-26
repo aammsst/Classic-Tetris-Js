@@ -195,6 +195,7 @@ function hardDrop() {
 function freeze(): boolean {
     if (curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         curr.forEach(index => squares[currPos + index].classList.add('taken'));
+        clearTimeout(dasTimeout);
         addScore();
         currIdx = nextIdx;
         currPiece = nextPiece;
@@ -460,30 +461,28 @@ function rotateCCW() {
 // }}}
 
 // move and rotation for pc {{{
-// move control
-function control(e: KeyboardEvent) {
+function controlDown(e: KeyboardEvent) {
+    e.preventDefault();
     switch (e.key) {
+        // movement control
         case 'ArrowLeft':
-            e.preventDefault();
             moveLeft();
             break;
         case 'ArrowRight':
-            e.preventDefault();
             moveRight();
             break;
         case 'ArrowDown':
-            e.preventDefault();
             moveDown();
             break;
-    }
-}
-
-// rotation control
-function controlR(e: KeyboardEvent) {
-    if (e.key === 'f') {
-        rotateCW();
-    } else if (e.key === 'd') {
-        rotateCCW();
+        // rotation control
+        case 'f':
+            if (e.repeat) return;
+            rotateCW();
+            break;
+        case 'd':
+            if (e.repeat) return;
+            rotateCCW();
+            break;
     }
 }
 // }}}

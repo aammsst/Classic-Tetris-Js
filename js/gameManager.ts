@@ -33,10 +33,12 @@ let moveRightBtn: HTMLElement | null;
 let hardDropBtn: HTMLElement | null;
 let rotCWBtn: HTMLElement | null; // clockwise
 let rotCCWBtn: HTMLElement | null; // counter-clockwise
-let movementPressed = false;
+let rightPressed = false;
+let leftPressed = false;
 let dasCharged = false;
 const dasFast = 100;
 const dasSlow = 500;
+let dasTimeout: number;
 
 const singleScore = 10;
 const doubleScore = 25;
@@ -210,36 +212,24 @@ function initBtns() {
 
     // mobile in-game btns
     if (moveRightBtn) {
-        moveRightBtn.addEventListener('touchstart', () => {
-            movementPressed = true;
-            moveDas(moveRight);
+        moveRightBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            rightPressed = true;
+            moveRightDas();
         })
         moveRightBtn.addEventListener('touchend', () => {
-            dasCharged = false;
-            movementPressed = false;
-        })
-        moveRightBtn.addEventListener('touchcancel', e => {
-            e.preventDefault();
-        })
-        moveRightBtn.addEventListener('touchmove', e => {
-            e.preventDefault();
+            rightPressed = false;
         })
     }
 
     if (moveLeftBtn) {
-        moveLeftBtn.addEventListener('touchstart', () => {
-            movementPressed = true;
-            moveDas(moveLeft);
+        moveLeftBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            leftPressed = true;
+            moveLeftDas();
         })
         moveLeftBtn.addEventListener('touchend', () => {
-            dasCharged = false;
-            movementPressed = false;
-        })
-        moveLeftBtn.addEventListener('touchcancel', e => {
-            e.preventDefault();
-        })
-        moveLeftBtn.addEventListener('touchmove', e => {
-            e.preventDefault();
+            leftPressed = false;
         })
     }
 
@@ -268,17 +258,16 @@ function startGame() {
     gameMenu!.style.display = "none";
     optionsBtn!.style.display = "none";
     if (gameManager.isMobile) {
-        gameBtns!.style.display = "block";
         grid?.addEventListener("touchstart",mobileMoveStart)
         grid?.addEventListener("touchend",mobileMoveEnd)
     } else {
-        document.addEventListener('keydown',control);
-        document.addEventListener('keyup',controlR);
+        document.addEventListener('keydown', controlDown);
     }
     timerId = setInterval(moveDown, 500);
     reset();
     displayShape();
     displayShapeMob();
+    dasCharged = false;
     draw();
     pauseBtn!.style.display = "block";
     startBtn!.style.display = "none";
@@ -288,7 +277,6 @@ function startGame() {
 // restart fn {{{
 function restartGame() {
     gameMenu!.style.display = "none";
-    gameBtns!.style.display = "block";
     optionsBtn!.style.display = "none";
     if (mobInstr) {
         mobInstr.style.display = "flex";
@@ -304,8 +292,7 @@ function restartGame() {
         grid?.addEventListener("touchstart",mobileMoveStart)
         grid?.addEventListener("touchend",mobileMoveEnd)
     } else {
-        document.addEventListener('keydown',control);
-        document.addEventListener('keyup',controlR);
+        document.addEventListener('keydown', controlDown);
     }
     timerId = setInterval(moveDown, 500);
     gameManager.score = 0;
@@ -337,8 +324,7 @@ function togglePause() {
             grid.removeEventListener("touchstart",mobileMoveStart);
             grid.removeEventListener("touchend",mobileMoveEnd);
         } else {
-            document.removeEventListener('keyup',controlR);
-            document.removeEventListener('keydown',control);
+            document.removeEventListener('keydown', controlDown);
         }
         timerId = 0;
         pauseBtn!.innerText = "Continue";
@@ -359,8 +345,7 @@ function togglePause() {
             grid?.addEventListener("touchstart",mobileMoveStart)
             grid?.addEventListener("touchend",mobileMoveEnd)
         } else {
-            document.addEventListener('keydown',control);
-            document.addEventListener('keyup',controlR);
+            document.addEventListener('keydown', controlDown);
         }
         timerId = setInterval(moveDown, 500);
         pauseBtn!.innerText = "Puase";
@@ -608,8 +593,7 @@ function gameOver() {
         gameMenu!.style.display = "block";
         clearInterval(timerId);
         if (!gameManager.isMobile) {
-            document.removeEventListener('keydown',control);
-            document.removeEventListener('keyup',controlR);
+            document.removeEventListener('keydown', controlDown);
         }
     }
 }
