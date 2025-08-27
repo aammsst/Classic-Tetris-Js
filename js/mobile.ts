@@ -159,6 +159,8 @@ function toggleFS() {
             // display next on full screen
             miniGridMob!.style.display = "flex";
             displayShapeMob();
+            // display info
+            infoMob!.style.display = "flex";
             window.history.pushState({page: 1}, 'Full Screen')
         })
         .catch(er => {
@@ -168,6 +170,7 @@ function toggleFS() {
         exitFS();
         fullSBtn!.innerText = "FullScreen";
         miniGridMob!.style.display = "none";
+        infoMob!.style.display = "none";
         document.exitFullscreen();
     }
 }

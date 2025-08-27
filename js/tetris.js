@@ -17,9 +17,14 @@ let restartBtn;
 let gameBtns;
 let scoreDisplay;
 let displaySq;
-let displaySqMob;
 let gridCont;
 let leftCont;
+let infoMob;
+let scoreDisplayMob;
+let linesDisplayMob;
+let levelDisplayMob;
+let comboDisplayMob;
+let displaySqMob;
 let buttons;
 let fullSBtn;
 let mobInstr = null;
@@ -38,11 +43,13 @@ const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
 const tetrisScore = 80;
+let comboNum = 0;
 let gameManager = {
     status: "Unstarted",
     isMobile: false,
     score: 0,
     lines: 0,
+    isSurvival: true,
 };
 document.addEventListener('DOMContentLoaded', () => {
     gameMenu = document.getElementById("gameMenu");
@@ -113,7 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
         hardDropBtn = document.getElementById("hard-drop-button");
         rotCWBtn = document.getElementById("rotate-cw-button");
         rotCCWBtn = document.getElementById("rotate-ccw-button");
-        gameBtns.style.display = "none";
+        moveRightBtn.style.display = "none";
+        moveLeftBtn.style.display = "none";
+        hardDropBtn.style.display = "none";
+        rotCWBtn.style.display = "none";
+        rotCCWBtn.style.display = "none";
+        infoMob = document.getElementById("info-mob");
+        scoreDisplayMob = document.getElementById("score-mob");
+        linesDisplayMob = document.getElementById("lines-mob");
+        levelDisplayMob = document.getElementById("level-mob");
+        comboDisplayMob = document.getElementById("combos-mob");
+        infoMob.style.display = "none";
         mobileEvents();
     }
     else {
@@ -463,21 +480,70 @@ function addScore() {
             squares.forEach(cell => grid.appendChild(cell));
         }
     });
+    let comboText = "";
     switch (linesCleared) {
         case 0:
+            comboNum = 0;
             return;
         case 1:
             gameManager.score += singleScore;
+            comboNum++;
+            break;
         case 2:
             gameManager.score += doubleScore;
+            comboNum++;
+            comboText = "Double!";
+            break;
         case 3:
             gameManager.score += tripleScore;
+            comboNum++;
+            comboText = "Triple!";
+            break;
         case 4:
             gameManager.score += tetrisScore;
+            comboNum++;
+            comboText = "Tetris!";
+            break;
     }
     gameManager.lines += linesCleared;
+    if (gameManager.isMobile) {
+        if ((comboText != "" || comboNum > 1) && comboDisplayMob) {
+            comboDisplayMob.innerHTML = `x${comboNum} ${comboText}`;
+            setTimeout(comboDisplayReset, 3000);
+        }
+        if (comboNum == 0) {
+            comboDisplayMob.innerHTML = "";
+        }
+        if (linesDisplayMob) {
+            linesDisplayMob.innerHTML = gameManager.lines.toString();
+        }
+        if (scoreDisplayMob) {
+            scoreDisplayMob.innerHTML = gameManager.score.toString();
+        }
+        if (!gameManager.isSurvival) {
+            if (gameManager.lines > 0) {
+                gameManager.level = Math.ceil(gameManager.lines / 10);
+            }
+            else {
+                gameManager.level = 1;
+            }
+            if (levelDisplayMob) {
+                levelDisplayMob.innerHTML = gameManager.level.toString();
+            }
+        }
+    }
     scoreDisplay.innerHTML = gameManager.score.toString();
     lines.innerHTML = gameManager.lines.toString();
+}
+function comboDisplayReset() {
+    if (comboDisplayMob) {
+        if (comboNum > 1) {
+            comboDisplayMob.innerHTML = `x${comboNum}`;
+        }
+        else {
+            comboDisplayMob.innerHTML = "";
+        }
+    }
 }
 function gameOver() {
     if (curr.some(index => squares[currPos + index].classList.contains('taken'))) {
@@ -638,6 +704,7 @@ function toggleFS() {
             optionsMenu.classList.replace("gameMenu", "gameMenuFS");
             miniGridMob.style.display = "flex";
             displayShapeMob();
+            infoMob.style.display = "flex";
             window.history.pushState({ page: 1 }, 'Full Screen');
         })
             .catch(er => {
@@ -648,6 +715,7 @@ function toggleFS() {
         exitFS();
         fullSBtn.innerText = "FullScreen";
         miniGridMob.style.display = "none";
+        infoMob.style.display = "none";
         document.exitFullscreen();
     }
 }

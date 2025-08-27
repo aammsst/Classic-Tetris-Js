@@ -19,9 +19,15 @@ let gameBtns: HTMLElement | null;
 
 let scoreDisplay: HTMLElement | null;
 let displaySq: HTMLElement[];
-let displaySqMob: HTMLElement[];
 let gridCont: HTMLElement | null;
 let leftCont: HTMLElement | null;
+
+let infoMob: HTMLElement | null;
+let scoreDisplayMob: HTMLElement | null;
+let linesDisplayMob: HTMLElement | null;
+let levelDisplayMob: HTMLElement | null;
+let comboDisplayMob: HTMLElement | null;
+let displaySqMob: HTMLElement[];
 
 let buttons: HTMLElement[] | null;
 let fullSBtn: HTMLElement | null;
@@ -45,6 +51,8 @@ const doubleScore = 25;
 const tripleScore = 40;
 const tetrisScore = 80;
 
+let comboNum = 0;
+
 type gameStatus = "Unstarted" | "Started" | "GameOver" | "Paused";
 
 type game = {
@@ -52,6 +60,8 @@ type game = {
     isMobile: boolean;
     score: number;
     lines: number;
+    isSurvival: boolean;
+    level?: number;
 }
 
 let gameManager: game = {
@@ -59,6 +69,7 @@ let gameManager: game = {
     isMobile: false,
     score: 0,
     lines: 0,
+    isSurvival: true,
 }
 
 document.addEventListener('DOMContentLoaded',() => {
@@ -69,6 +80,7 @@ document.addEventListener('DOMContentLoaded',() => {
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
+
     lines = document.getElementById("lines");
     lastScore = document.createElement("H2");
     lastLine = document.createElement("H2");
@@ -145,7 +157,21 @@ document.addEventListener('DOMContentLoaded',() => {
         rotCWBtn = document.getElementById("rotate-cw-button");
         rotCCWBtn = document.getElementById("rotate-ccw-button");
 
-        gameBtns.style.display = "none";
+        moveRightBtn!.style.display = "none";
+        moveLeftBtn!.style.display = "none";
+        hardDropBtn!.style.display = "none";
+        rotCWBtn!.style.display = "none";
+        rotCCWBtn!.style.display = "none";
+
+        // display info on Full-Screen
+        infoMob = document.getElementById("info-mob");
+        scoreDisplayMob = document.getElementById("score-mob");
+        linesDisplayMob = document.getElementById("lines-mob");
+        levelDisplayMob = document.getElementById("level-mob");
+        comboDisplayMob = document.getElementById("combos-mob");
+
+        // hide until fullScreen
+        infoMob!.style.display = "none";
 
         mobileEvents();
 
@@ -400,6 +426,8 @@ function loadOptions() {
         }
     })
 
+    // TODO: levels or survival
+
     if (gameManager.isMobile) {
         // use rot buttons?
         const rotCheck = document.getElementById("use-rot-check-box") as HTMLInputElement;
@@ -554,22 +582,79 @@ function addScore() {
     })
     
     // Updating Lines and Score
-    // TODO: combos
+    // TODO: back to back tetris!
+    let comboText = "";
     switch (linesCleared) {
         case 0:
+            comboNum = 0;
             return;
         case 1:
             gameManager.score += singleScore;
+            comboNum++;
+            break;
         case 2:
             gameManager.score += doubleScore;
+            comboNum++;
+            comboText = "Double!";
+            break;
         case 3:
             gameManager.score += tripleScore;
+            comboNum++;
+            comboText = "Triple!";
+            break
         case 4:
             gameManager.score += tetrisScore;
+            comboNum++;
+            comboText = "Tetris!";
+            break;
     }
+
     gameManager.lines += linesCleared;
+    if (gameManager.isMobile) {
+        // combos
+        if ((comboText != "" || comboNum > 1) && comboDisplayMob) {
+            
+            comboDisplayMob.innerHTML = `x${comboNum} ${comboText}`;
+            setTimeout(comboDisplayReset, 3000);
+        }
+        if (comboNum == 0) {
+            comboDisplayMob!.innerHTML = "";
+        }
+
+        // lines
+        if (linesDisplayMob) {
+            linesDisplayMob.innerHTML = gameManager.lines.toString(); 
+        }
+
+        // score
+        if (scoreDisplayMob) {
+            scoreDisplayMob.innerHTML = gameManager.score.toString();
+        }
+
+        // level
+        if (!gameManager.isSurvival) {
+            if (gameManager.lines > 0) {
+                gameManager.level = Math.ceil(gameManager.lines / 10);
+            } else {
+                gameManager.level = 1;
+            }
+            if (levelDisplayMob) {
+                levelDisplayMob.innerHTML = gameManager.level.toString();
+            }
+        }
+    }
     scoreDisplay!.innerHTML = gameManager.score.toString();
     lines!.innerHTML = gameManager.lines.toString();
+}
+
+function comboDisplayReset() {
+    if (comboDisplayMob) {
+        if (comboNum > 1) {
+            comboDisplayMob.innerHTML = `x${comboNum}`;
+        } else {
+            comboDisplayMob.innerHTML = "";
+        }
+    }
 }
 // }}}
 

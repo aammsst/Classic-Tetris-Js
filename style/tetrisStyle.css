@@ -295,3 +295,44 @@ html{
     background-color: rgba(200, 33, 200, 0.2);
     right: 0;
 }
+
+#info-mob {
+    margin-left: 42px;
+    margin-top: 27px;
+    flex-direction: column;
+    position: absolute;
+    display: flex ;
+    flex-wrap: wrap;
+}
+
+#score-mob {
+    font-size: 27px;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #ebf6f7;
+    z-index: 20;
+}
+
+#lines-mob {
+    font-size: 21px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    color: yellowgreen;
+    z-index: 20;
+}
+
+#level-mob {
+    font-size: 21px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    color: indianred;
+    z-index: 20;
+}
+
+#combos-mob {
+    font-size: 21px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    color: royalblue;
+    z-index: 20;
+}
