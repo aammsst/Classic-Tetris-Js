@@ -336,3 +336,26 @@ html{
     color: royalblue;
     z-index: 20;
 }
+
+#info-display {
+    display: flex ;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+#info-display * {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+#combos {
+    color: royalblue;
+}
+
+.gameOvTxt {
+    margin: auto;
+    display: flex ;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    color: magenta;
+}

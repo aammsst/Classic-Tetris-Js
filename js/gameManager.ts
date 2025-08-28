@@ -8,7 +8,11 @@ let miniGridMob: HTMLElement | null;
 let squares: HTMLElement[];
 let lastLine: HTMLElement | null;
 let lastScore: HTMLElement | null;
-let lines: HTMLElement | null;
+let scoreDisplay: HTMLElement | null;
+let linesDisplay: HTMLElement | null;
+let levelDisplay: HTMLElement | null;
+let levelDisplayCont: HTMLElement | null;
+let comboDisplay: HTMLElement | null;
 
 let startBtn: HTMLElement | null;
 let optionsBtn: HTMLElement | null;
@@ -17,10 +21,19 @@ let pauseBtn: HTMLElement | null;
 let restartBtn: HTMLElement | null;
 let gameBtns: HTMLElement | null;
 
-let scoreDisplay: HTMLElement | null;
 let displaySq: HTMLElement[];
 let gridCont: HTMLElement | null;
 let leftCont: HTMLElement | null;
+
+// global options
+let gridCheck: HTMLInputElement;
+let survivalCheck: HTMLInputElement;
+
+// mobile options
+let mvmntBtnsCheck: HTMLInputElement;
+let rotBtnsCheck: HTMLInputElement;
+let hardDropBtnCheck: HTMLInputElement;
+let transparentBtnsCheck: HTMLInputElement;
 
 let infoMob: HTMLElement | null;
 let scoreDisplayMob: HTMLElement | null;
@@ -52,6 +65,7 @@ const tripleScore = 40;
 const tetrisScore = 80;
 
 let comboNum = 0;
+let backToBackNum = 0;
 
 type gameStatus = "Unstarted" | "Started" | "GameOver" | "Paused";
 
@@ -61,7 +75,7 @@ type game = {
     score: number;
     lines: number;
     isSurvival: boolean;
-    level?: number;
+    level: number;
 }
 
 let gameManager: game = {
@@ -69,7 +83,8 @@ let gameManager: game = {
     isMobile: false,
     score: 0,
     lines: 0,
-    isSurvival: true,
+    isSurvival: false,
+    level: 1,
 }
 
 document.addEventListener('DOMContentLoaded',() => {
@@ -79,11 +94,18 @@ document.addEventListener('DOMContentLoaded',() => {
     optionsTxt = document.getElementById("optionsTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
-    scoreDisplay = document.getElementById("score");
 
-    lines = document.getElementById("lines");
+    scoreDisplay = document.getElementById("score");
+    linesDisplay = document.getElementById("lines");
     lastScore = document.createElement("H2");
     lastLine = document.createElement("H2");
+    comboDisplay = document.getElementById("combos");
+    levelDisplay = document.getElementById("levels");
+    levelDisplayCont = document.getElementById("level-display-container");
+
+    // hide levelDisplay until starting game as non-survival
+    levelDisplayCont!.style.display = "none";
+
     displaySq = Array.from(document.querySelectorAll('.mini-grid div'));
     displaySqMob = Array.from(document.querySelectorAll('.mini-grid-mob div'));
     miniGridMob = document.querySelector('.mini-grid-mob');
@@ -92,6 +114,10 @@ document.addEventListener('DOMContentLoaded',() => {
     let btns = document.createElement("DIV");
     gameBtns = document.createElement("DIV");
     let optionsBtns = document.createElement("DIV");
+
+    // global options
+    gridCheck = document.getElementById("grid-check-box") as HTMLInputElement;
+    survivalCheck = document.getElementById("survival-check-box") as HTMLInputElement;
 
     // mobile detect
     if (navigator.maxTouchPoints > 0 &&
@@ -112,6 +138,7 @@ document.addEventListener('DOMContentLoaded',() => {
             <button id="fullscreen-button" type="button" class="btn" hidden="true">FullScreen</button>
         `;
 
+        // inside options buttons
         // TODO: cancel, apply, restart(apply and restart) btns
         optionsBtns.innerHTML += `
             <button id="back-button" type="button" class="btn">Back</button>
@@ -170,6 +197,13 @@ document.addEventListener('DOMContentLoaded',() => {
         levelDisplayMob = document.getElementById("level-mob");
         comboDisplayMob = document.getElementById("combos-mob");
 
+        // mobile options
+
+        mvmntBtnsCheck = document.getElementById("use-mov-check-box") as HTMLInputElement;
+        rotBtnsCheck = document.getElementById("use-rot-check-box") as HTMLInputElement;
+        hardDropBtnCheck = document.getElementById("use-hard-drop-check-box") as HTMLInputElement;
+        transparentBtnsCheck = document.getElementById("transparent-check-box") as HTMLInputElement;
+
         // hide until fullScreen
         infoMob!.style.display = "none";
 
@@ -196,6 +230,7 @@ document.addEventListener('DOMContentLoaded',() => {
     }
 
     initBtns();
+    loadOptions();
 });
 
 // initBtns {{{
@@ -210,16 +245,13 @@ function initBtns() {
     // options btn
     if (optionsBtn && grid) {
         optionsBtn.addEventListener('click', ()=>{
-            loadOptions();
             showOptions();
         });
     }
 
     // in options btn
     if (backBtn && grid) {
-        backBtn.addEventListener("click", () => {
-            hideOptions();
-        });
+        backBtn.addEventListener("click", hideOptions);
     }
 
     // pause btn
@@ -274,10 +306,6 @@ function initBtns() {
 }
 // }}}
 
-let setTimerID = () => {
-    timerId = setInterval(moveDown, 500);
-}
-
 // start fn {{{
 function startGame() {
     gameManager.status = "Started";
@@ -289,7 +317,22 @@ function startGame() {
     } else {
         document.addEventListener('keydown', controlDown);
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        levelDisplay!.style.display = "none";
+        if (gameManager.isMobile) {
+            levelDisplayMob!.style.display = "none";
+        }
+        levelDisplayCont!.style.display = "none";
+        timerId = setInterval(moveDown, 500);
+    } else {
+        levelDisplayCont!.style.display = "block";
+        levelDisplay!.style.display = "block";
+        if (gameManager.isMobile) {
+            levelDisplayMob!.style.display = "block";
+        }
+        gameManager.level = 1;
+        levelUpdate();
+    }
     reset();
     displayShape();
     displayShapeMob();
@@ -320,11 +363,26 @@ function restartGame() {
     } else {
         document.addEventListener('keydown', controlDown);
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        levelDisplay!.style.display = "none";
+        if (gameManager.isMobile) {
+            levelDisplayMob!.style.display = "none";
+        }
+        levelDisplayCont!.style.display = "none";
+        timerId = setInterval(moveDown, 500);
+    } else {
+        levelDisplayCont!.style.display = "block";
+        levelDisplay!.style.display = "block";
+        if (gameManager.isMobile) {
+            levelDisplayMob!.style.display = "block";
+        }
+        gameManager.level = 1;
+        levelUpdate();
+    }
     gameManager.score = 0;
     scoreDisplay!.innerHTML = gameManager.score.toString();
     gameManager.lines = 0;
-    lines!.innerHTML = gameManager.lines.toString();
+    linesDisplay!.innerHTML = gameManager.lines.toString();
     if (gameManager.status == "GameOver") {
         gameMenu!.style.display = "none";
         gameMenu!.removeChild(lastLine!);
@@ -359,6 +417,7 @@ function togglePause() {
         restartBtn!.style.display = "block";
         optionsBtn!.style.display = "block";
         backBtn!.style.display = "none";
+        startBtn!.style.display = "none";
     } else {
         // unpause
         gameBtns!.style.display = "block";
@@ -373,7 +432,11 @@ function togglePause() {
         } else {
             document.addEventListener('keydown', controlDown);
         }
-        timerId = setInterval(moveDown, 500);
+        if (gameManager.isSurvival) {
+            timerId = setInterval(moveDown, 500);
+        } else {
+            levelUpdate();
+        }
         pauseBtn!.innerText = "Puase";
     }
 }
@@ -383,6 +446,7 @@ function togglePause() {
 
 function showOptions() {
     // show options
+    backBtn!.innerHTML = "Back";
     if (gameManager.status == "Paused") {
         gameMenu!.style.display = "none";
         pauseBtn!.style.display = "none";
@@ -399,10 +463,12 @@ function showOptions() {
 }
 
 function hideOptions() {
+    // back to pause menu
     if (gameManager.status == "Paused") {
         gameMenu!.style.display = "block";
         pauseBtn!.style.display = "block";
         restartBtn!.style.display = "block";
+        startBtn!.style.display = "none";
     } else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
         gameMenu!.style.display = "block";
         startBtn!.style.display = "block";
@@ -415,9 +481,8 @@ function hideOptions() {
 }
 
 function loadOptions() {
-    // grid
-    const gridCheck = document.getElementById("grid-check-box") as HTMLInputElement;
 
+    // grid
     gridCheck.addEventListener('change', () => {
         if (gridCheck!.checked) {
             showGrid();
@@ -426,14 +491,13 @@ function loadOptions() {
         }
     })
 
-    // TODO: levels or survival
+    // survival - changes require restart
+    survivalCheck.addEventListener('change', handleSurvival);
 
     if (gameManager.isMobile) {
         // use rot buttons?
-        const rotCheck = document.getElementById("use-rot-check-box") as HTMLInputElement;
-
-        rotCheck.addEventListener('change', () => {
-            if (rotCheck!.checked) {
+        rotBtnsCheck.addEventListener('change', () => {
+            if (rotBtnsCheck!.checked) {
                 handleBtns(true, "rotate");
             } else {
                 handleBtns(false, "rotate");
@@ -441,10 +505,8 @@ function loadOptions() {
         })
 
         // use movement buttons?
-        const movementCheck = document.getElementById("use-mov-check-box") as HTMLInputElement;
-
-        movementCheck.addEventListener('change', () => {
-            if (movementCheck!.checked) {
+        mvmntBtnsCheck.addEventListener('change', () => {
+            if (mvmntBtnsCheck!.checked) {
                 handleBtns(true, "movement");
             } else {
                 handleBtns(false, "movement");
@@ -452,10 +514,8 @@ function loadOptions() {
         })
 
         // use hard-drop?
-        const hardCheck = document.getElementById("use-hard-drop-check-box") as HTMLInputElement;
-
-        hardCheck.addEventListener('change', () => {
-            if (hardCheck!.checked) {
+        hardDropBtnCheck.addEventListener('change', () => {
+            if (hardDropBtnCheck!.checked) {
                 handleBtns(true, "hardDrop");
             } else {
                 handleBtns(false, "hardDrop");
@@ -463,15 +523,32 @@ function loadOptions() {
         })
 
         // transparent buttons?
-        const transparentCheck = document.getElementById("transparent-check-box") as HTMLInputElement;
-
-        transparentCheck.addEventListener('change', () => {
-            if (transparentCheck!.checked) {
+        transparentBtnsCheck.addEventListener('change', () => {
+            if (transparentBtnsCheck!.checked) {
                 handleBtns(true, "transparent");
             } else {
                 handleBtns(false, "transparent");
             }
         })
+    }
+}
+
+function handleSurvival() {
+        if (survivalCheck!.checked) {
+            gameManager.isSurvival = true;
+        } else {
+            gameManager.isSurvival = false;
+        }
+        toggleRestartBackBtn();
+}
+
+function toggleRestartBackBtn() {
+    if (backBtn!.innerHTML == "Back") {
+        backBtn!.innerHTML = "Restart";
+        backBtn!.addEventListener("click", restartGame);
+    } else {
+        backBtn!.removeEventListener("click", restartGame);
+        backBtn!.innerHTML = "Back";
     }
 }
 
@@ -587,25 +664,31 @@ function addScore() {
     switch (linesCleared) {
         case 0:
             comboNum = 0;
+            if (comboDisplayMob) comboDisplayMob.innerHTML = "";
+            if (comboDisplay) comboDisplay.innerHTML = "";
             return;
         case 1:
-            gameManager.score += singleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (singleScore + comboNum) * gameManager.level;
             break;
         case 2:
-            gameManager.score += doubleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (doubleScore + comboNum) * gameManager.level;
             comboText = "Double!";
             break;
         case 3:
-            gameManager.score += tripleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (tripleScore + comboNum) * gameManager.level;
             comboText = "Triple!";
             break
         case 4:
-            gameManager.score += tetrisScore;
             comboNum++;
-            comboText = "Tetris!";
+            backToBackNum++;
+            gameManager.score += (tetrisScore + comboNum + backToBackNum) * gameManager.level;
+            comboText = backToBackNum > 1 ? "Back To Back Tetris!" : "Tetris!";
             break;
     }
 
@@ -616,9 +699,6 @@ function addScore() {
             
             comboDisplayMob.innerHTML = `x${comboNum} ${comboText}`;
             setTimeout(comboDisplayReset, 3000);
-        }
-        if (comboNum == 0) {
-            comboDisplayMob!.innerHTML = "";
         }
 
         // lines
@@ -633,27 +713,63 @@ function addScore() {
 
         // level
         if (!gameManager.isSurvival) {
-            if (gameManager.lines > 0) {
-                gameManager.level = Math.ceil(gameManager.lines / 10);
-            } else {
-                gameManager.level = 1;
-            }
+            // level update
+            levelUpdate();
             if (levelDisplayMob) {
                 levelDisplayMob.innerHTML = gameManager.level.toString();
             }
         }
     }
+
     scoreDisplay!.innerHTML = gameManager.score.toString();
-    lines!.innerHTML = gameManager.lines.toString();
+    linesDisplay!.innerHTML = gameManager.lines.toString();
+    if ((comboText != "" || comboNum > 1) && comboDisplay) {
+
+        comboDisplay.innerHTML = `x${comboNum} ${comboText}`;
+        setTimeout(comboDisplayReset, 3000);
+    }
+
+    if (!gameManager.isSurvival) {
+        levelUpdate();
+        if (levelDisplay) {
+            levelDisplay.innerHTML = gameManager.level.toString();
+        }
+    }
+}
+
+function levelUpdate() {
+    let newLevel = 1;
+    let intervalValue = 1000;
+    if (gameManager.lines > 0) {
+        newLevel = Math.ceil(gameManager.lines / 10);
+        gameManager.level = newLevel;
+    }
+
+    if (gameManager.level && gameManager.level == 1) {
+        clearInterval(timerId);
+        timerId = setInterval(moveDown, intervalValue);
+        return;
+    }
+
+    if (gameManager.level) {
+        intervalValue = Math.max((-30 * (newLevel)) + 1030, 100);
+        clearInterval(timerId);
+        timerId = setInterval(moveDown, intervalValue);
+    }
 }
 
 function comboDisplayReset() {
+    let comboNumTxt = "";
+    if (comboNum >= 1) {
+        comboNumTxt = `x${comboNum}`;
+
+    }
     if (comboDisplayMob) {
-        if (comboNum > 1) {
-            comboDisplayMob.innerHTML = `x${comboNum}`;
-        } else {
-            comboDisplayMob.innerHTML = "";
-        }
+        comboDisplayMob.innerHTML = comboNumTxt;
+    } 
+
+    if (comboDisplay) {
+        comboDisplay.innerHTML = comboNumTxt;
     }
 }
 // }}}

@@ -16,15 +16,47 @@ const width = 10;
     // tetrominos {{{
     const lTetromino = [
 	    [width+1,width+2,width+3,width*2+1],
+        // - - - -
+        // * * * -
+        // * - - -
+        // - - - -
 	    [1,2,width+2,width*2+2],
+        // * * - -
+        // - * - -
+        // - * - -
+        // - - - -
 	    [width+1,3,width+2,width+3],
+        // - - * -
+        // * * * -
+        // - - - -
+        // - - - -
 	    [width+2,2,width*2+2,width*2+3],
+        // - * - -
+        // - * - -
+        // - * * -
+        // - - - -
     ];
     const zTetromino = [
 	    [width+1,width+2,width*2+2,width*2+3],
+        // - - - -
+        // * * - -
+        // - * * -
+        // - - - -
 	    [width+2,3,width+3,width*2+2],
+        // - - * -
+        // - * * -
+        // - * - -
+        // - - - -
 	    [width+1,width+2,width*2+2,width*2+3],
+        // - - - -
+        // * * - -
+        // - * * -
+        // - - - -
 	    [width+2,3,width+3,width*2+2],
+        // - - * -
+        // - * * -
+        // - * - -
+        // - - - -
     ];
     const oTetromino = [
 	    [1,2,width+1,width+2],
@@ -34,27 +66,91 @@ const width = 10;
     ];
     const iTetromino = [
 	    [width+1,width+2,width+3,width+4],
+        // - - - -
+        // * * * *
+        // - - - -
+        // - - - -
 	    [3,width+3,width*2+3,width*3+3],
+        // - - * -
+        // - - * -
+        // - - * -
+        // - - * -
 	    [width*2+1,width*2+2,width*2+3,width*2+4],
+        // - - - -
+        // - - - -
+        // * * * *
+        // - - - -
 	    [2,width+2,width*2+2,width*3+2],
+        // - * - -
+        // - * - -
+        // - * - -
+        // - * - -
     ];
     const tTetromino = [
 	    [width+1,width+2,width+3,width*2+2],
+        // - - - -
+        // * * * -
+        // - * - -
+        // - - - -
 	    [width+1,2,width+2,width*2+2],
+        // - * - -
+        // * * - -
+        // - * - -
+        // - - - -
 	    [width+1,2,width+2,width+3],
+        // - * - -
+        // * * * -
+        // - - - -
+        // - - - -
 	    [2,width+2,width+3,width*2+2],
+        // - * - -
+        // - * * -
+        // - * - -
+        // - - - -
     ];
     const sTetromino = [
 	    [width*2+1,width+2,width+3,width*2+2],
+        // - - - -
+        // - * * -
+        // * * - -
+        // - - - -
 	    [2,width+2,width+3,width*2+3],
+        // - * - -
+        // - * * -
+        // - - * -
+        // - - - -
 	    [width*2+1,width+2,width+3,width*2+2],
+        // - - - -
+        // - * * -
+        // * * - -
+        // - - - -
 	    [2,width+2,width+3,width*2+3],
+        // - * - -
+        // - * * -
+        // - - * -
+        // - - - -
     ];
     const jTetromino = [
 	    [width+1,width+2,width+3,width*2+3],
+        // - - - -
+        // * * * -
+        // - - * -
+        // - - - -
 	    [width*2+1,2,width+2,width*2+2],
+        // - * - -
+        // - * - -
+        // * * - -
+        // - - - -
 	    [1,width+1,width+2,width+3],
+        // * - - -
+        // * * * -
+        // - - - -
+        // - - - -
 	    [2,3,width+2,width*2+2],
+        // - * * -
+        // - * - -
+        // - * - -
+        // - - - -
     ];
    
     const tetrominos = [
@@ -129,7 +225,7 @@ function setNextRand(): void {
 function reset() {
     nextIdx = -1;
     // currBatch = new Array(7);
-    setNextRand(); // updates nextIdx and generates next batch if necesary
+    setNextRand(); // updates nextIdx and generates next batch if necessary
     nextPiece = currBatch[nextIdx];
     currRot = initialRot;
     currPos = initialPos;
@@ -173,12 +269,17 @@ function moveDown() {
 
 function softDrop() {
     clearInterval(timerId);
+    timerId = undefined;
     while (!curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         undraw();
         currPos += width;
         draw();
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        timerId = setInterval(moveDown, 500);
+    } else {
+        levelUpdate();
+    }
 }
 
 // TODO: settings menu to chose hard or soft, colors, and speed
@@ -199,7 +300,7 @@ function freeze(): boolean {
         addScore();
         currIdx = nextIdx;
         currPiece = nextPiece;
-        setNextRand(); // updates nextIdx and generates next batch if necesary
+        setNextRand(); // updates nextIdx and generates next batch if necessary
         currRot = initialRot;
         curr = tetrominos[currPiece][currRot];
         nextPiece = currBatch[nextIdx];
@@ -245,218 +346,278 @@ function moveRight() {
 
 // rotate clockwise
 function rotateCW() {
+    if (currPiece == 2) {
+        // o piece
+        return
+    }
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+    let newRot = currRot;
+    let newPos = currPos;  // position Correction if necessary
 
     if (!rightEdge && !leftEdge) {
-        currRot++;
+        newRot++;
 
     } else if (rightEdge) {
-        switch (currPiece) {
-            case 0:
-                // l
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-            case 1:
-                // z
-                currRot++;
-                break;
-            case 2:
-                // o
-                draw();
-                return;
-            case 3:
-                // i
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 4:
-                // t
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-            case 5:
-                // s
-                currRot++;
-                break;
-            case 6:
-                // j
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCWRightEdge();
     } else if (leftEdge) {
-        switch (currPiece) {
-            case 0:
-                // l
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-            case 1:
-                // z
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 2:
-                // o
-                draw();
-                return;
-            case 3:
-                // i
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 4:
-                // t
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-            case 5:
-                // s
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 6:
-                // j
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCWLeftEdge();
     }
 
-    if (currRot === curr.length) {
-        currRot = 0;
+    if (newRot === curr.length) {
+        newRot = 0;
+    }
+
+    let rotatedCurr = tetrominos[currPiece][newRot];
+    // curr = tetrominos[currPiece][currRot];
+    // overlapping check
+    const check = rotatedCurr.some(index => squares[newPos + index].classList.contains('taken'));
+
+    if (!check) {
+        // apply rotation
+        currRot = newRot;
+        currPos = newPos;
     }
 
     curr = tetrominos[currPiece][currRot];
-    // overlapping check
-    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
-    if (check) {
-        currRot--;
-        curr = tetrominos[currPiece][currRot];
-    }
-
     draw();
 }
 
 // rotate counter clockwise
 function rotateCCW() {
+    if (currPiece == 2) {
+        // o piece
+        return
+    }
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+    let newRot = currRot;
+    let newPos = currPos;  // position Correction if necessary
 
     if (!rightEdge && !leftEdge) {
-        currRot--;
+        newRot--;
     } else if (rightEdge) {
-        switch (currPiece) {
-            case 0:
-                // l
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-            case 1:
-                // z
-                currRot--;
-                break;
-            case 2:
-                // o
-                draw();
-                return;
-            case 3:
-                // i
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 4:
-                // t
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-            case 5:
-                // s
-                currRot--;
-                break;
-            case 6:
-                // j
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCCWRightEdge();
 
     } else if (leftEdge) {
-        switch (currPiece) {
-            case 0:
-                // l
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-            case 1:
-                // z
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 2:
-                // o
-                draw();
-                return;
-            case 3:
-                // i
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 4:
-                // t
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-            case 5:
-                // s
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 6:
-                // j
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCCWLeftEdge();
     }
 
-    if (currRot < 0) {
-        currRot = 3;
+    if (newRot < 0) {
+        newRot = 3;
+    }
+
+    // overlapping check
+    let rotatedCurr = tetrominos[currPiece][newRot];
+    const check = rotatedCurr.some(index => squares[newPos + index].classList.contains('taken'));
+    if (!check) {
+        // apply rotation
+        currRot = newRot;
+        currPos = newPos;
     }
 
     curr = tetrominos[currPiece][currRot];
-    // overlapping check
-    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
-    if (check) {
-        currRot++;
-        curr = tetrominos[currPiece][currRot];
-    }
 
     draw();
+}
+
+function preciseRotationCCWRightEdge(): [number, number] {
+    // unchecked couter-clock-wise rotation cases
+    // while piece is on rightEdge
+    let newRot = currRot;
+    let newPos = currPos;
+
+    switch (currPiece) {
+        case 0:
+            // l
+            if (currRot == 1) {
+                newPos -= 2;
+            }
+            break;
+        case 1:
+            // z
+            break;
+        case 3:
+            // i
+            if (currRot == 1) {
+                newPos--;
+            } else if (currRot == 3) {
+                newPos -= 2;
+            }
+            break;
+        case 4:
+            // t
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 5:
+            // s
+            break;
+        case 6:
+            // j
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+    }
+
+    newRot--;
+    if (newRot < 0) {
+        newRot = 3;
+    }
+
+    return [newRot, newPos];
+}
+
+function preciseRotationCCWLeftEdge(): [number, number] {
+    // unchecked couter-clock-wise rotation cases
+    // while piece is on leftEdge
+    let newRot = currRot;
+    let newPos = currPos;
+
+    switch (currPiece) {
+        // position correction
+        case 0:
+            // l
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 1:
+            // z
+            if (newRot == 1 || newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 3:
+            // i
+            if (newRot == 1) {
+                newPos += 2;
+            } else if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 4:
+            // t
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 5:
+            // s
+            if (newRot == 1 || newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 6:
+            // j
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+    }
+
+    newRot--;
+    return [newRot, newPos];
+}
+
+
+function preciseRotationCWRightEdge(): [number, number] {
+    // unchecked clock-wise rotation cases
+    // while piece is on rightEdge
+    let newRot = currRot;
+    let newPos = currPos;
+
+    switch (currPiece) {
+        // position correction
+        case 0:
+            // l
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 1:
+            // z
+            break;
+        case 3:
+            // i
+            if (currRot == 1) {
+                newPos--;
+            } else if (currRot == 3) {
+                newPos -= 2;
+            }
+            break;
+        case 4:
+            // t
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 5:
+            // s
+            break;
+        case 6:
+            // j
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+    }
+    newRot++;
+    return [newRot, newPos];
+}
+
+function preciseRotationCWLeftEdge(): [number, number] {
+    // unchecked clock-wise rotation cases
+    // while piece is on leftEdge
+    let newRot = currRot;
+    let newPos = currPos;
+    switch (currPiece) {
+        case 0:
+            // l
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 1:
+            // z
+            if (currRot == 1 || currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 3:
+            // i
+            if (currRot == 1) {
+                newPos += 2;
+            }
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 4:
+            // t
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 5:
+            // s
+            if (currRot == 1 || currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 6:
+            // j
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+    }
+    newRot++;
+    return [newRot, newPos];
 }
 // }}}
 

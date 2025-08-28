@@ -8,17 +8,26 @@ let miniGridMob;
 let squares;
 let lastLine;
 let lastScore;
-let lines;
+let scoreDisplay;
+let linesDisplay;
+let levelDisplay;
+let levelDisplayCont;
+let comboDisplay;
 let startBtn;
 let optionsBtn;
 let backBtn;
 let pauseBtn;
 let restartBtn;
 let gameBtns;
-let scoreDisplay;
 let displaySq;
 let gridCont;
 let leftCont;
+let gridCheck;
+let survivalCheck;
+let mvmntBtnsCheck;
+let rotBtnsCheck;
+let hardDropBtnCheck;
+let transparentBtnsCheck;
 let infoMob;
 let scoreDisplayMob;
 let linesDisplayMob;
@@ -44,12 +53,14 @@ const doubleScore = 25;
 const tripleScore = 40;
 const tetrisScore = 80;
 let comboNum = 0;
+let backToBackNum = 0;
 let gameManager = {
     status: "Unstarted",
     isMobile: false,
     score: 0,
     lines: 0,
-    isSurvival: true,
+    isSurvival: false,
+    level: 1,
 };
 document.addEventListener('DOMContentLoaded', () => {
     gameMenu = document.getElementById("gameMenu");
@@ -59,9 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
     scoreDisplay = document.getElementById("score");
-    lines = document.getElementById("lines");
+    linesDisplay = document.getElementById("lines");
     lastScore = document.createElement("H2");
     lastLine = document.createElement("H2");
+    comboDisplay = document.getElementById("combos");
+    levelDisplay = document.getElementById("levels");
+    levelDisplayCont = document.getElementById("level-display-container");
+    levelDisplayCont.style.display = "none";
     displaySq = Array.from(document.querySelectorAll('.mini-grid div'));
     displaySqMob = Array.from(document.querySelectorAll('.mini-grid-mob div'));
     miniGridMob = document.querySelector('.mini-grid-mob');
@@ -70,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let btns = document.createElement("DIV");
     gameBtns = document.createElement("DIV");
     let optionsBtns = document.createElement("DIV");
+    gridCheck = document.getElementById("grid-check-box");
+    survivalCheck = document.getElementById("survival-check-box");
     if (navigator.maxTouchPoints > 0 &&
         window.innerWidth < window.innerHeight) {
         document.querySelector(".instructions").style.display = "none";
@@ -130,6 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
         linesDisplayMob = document.getElementById("lines-mob");
         levelDisplayMob = document.getElementById("level-mob");
         comboDisplayMob = document.getElementById("combos-mob");
+        mvmntBtnsCheck = document.getElementById("use-mov-check-box");
+        rotBtnsCheck = document.getElementById("use-rot-check-box");
+        hardDropBtnCheck = document.getElementById("use-hard-drop-check-box");
+        transparentBtnsCheck = document.getElementById("transparent-check-box");
         infoMob.style.display = "none";
         mobileEvents();
     }
@@ -151,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         restartBtn = document.getElementById("restart-button");
     }
     initBtns();
+    loadOptions();
 });
 function initBtns() {
     if (startBtn && grid) {
@@ -160,14 +182,11 @@ function initBtns() {
     }
     if (optionsBtn && grid) {
         optionsBtn.addEventListener('click', () => {
-            loadOptions();
             showOptions();
         });
     }
     if (backBtn && grid) {
-        backBtn.addEventListener("click", () => {
-            hideOptions();
-        });
+        backBtn.addEventListener("click", hideOptions);
     }
     if (pauseBtn) {
         pauseBtn.addEventListener('click', () => {
@@ -209,9 +228,6 @@ function initBtns() {
         rotCCWBtn.addEventListener('touchstart', rotateCCW);
     }
 }
-let setTimerID = () => {
-    timerId = setInterval(moveDown, 500);
-};
 function startGame() {
     gameManager.status = "Started";
     gameMenu.style.display = "none";
@@ -223,7 +239,23 @@ function startGame() {
     else {
         document.addEventListener('keydown', controlDown);
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        levelDisplay.style.display = "none";
+        if (gameManager.isMobile) {
+            levelDisplayMob.style.display = "none";
+        }
+        levelDisplayCont.style.display = "none";
+        timerId = setInterval(moveDown, 500);
+    }
+    else {
+        levelDisplayCont.style.display = "block";
+        levelDisplay.style.display = "block";
+        if (gameManager.isMobile) {
+            levelDisplayMob.style.display = "block";
+        }
+        gameManager.level = 1;
+        levelUpdate();
+    }
     reset();
     displayShape();
     displayShapeMob();
@@ -252,11 +284,27 @@ function restartGame() {
     else {
         document.addEventListener('keydown', controlDown);
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        levelDisplay.style.display = "none";
+        if (gameManager.isMobile) {
+            levelDisplayMob.style.display = "none";
+        }
+        levelDisplayCont.style.display = "none";
+        timerId = setInterval(moveDown, 500);
+    }
+    else {
+        levelDisplayCont.style.display = "block";
+        levelDisplay.style.display = "block";
+        if (gameManager.isMobile) {
+            levelDisplayMob.style.display = "block";
+        }
+        gameManager.level = 1;
+        levelUpdate();
+    }
     gameManager.score = 0;
     scoreDisplay.innerHTML = gameManager.score.toString();
     gameManager.lines = 0;
-    lines.innerHTML = gameManager.lines.toString();
+    linesDisplay.innerHTML = gameManager.lines.toString();
     if (gameManager.status == "GameOver") {
         gameMenu.style.display = "none";
         gameMenu.removeChild(lastLine);
@@ -288,6 +336,7 @@ function togglePause() {
         restartBtn.style.display = "block";
         optionsBtn.style.display = "block";
         backBtn.style.display = "none";
+        startBtn.style.display = "none";
     }
     else {
         gameBtns.style.display = "block";
@@ -303,11 +352,17 @@ function togglePause() {
         else {
             document.addEventListener('keydown', controlDown);
         }
-        timerId = setInterval(moveDown, 500);
+        if (gameManager.isSurvival) {
+            timerId = setInterval(moveDown, 500);
+        }
+        else {
+            levelUpdate();
+        }
         pauseBtn.innerText = "Puase";
     }
 }
 function showOptions() {
+    backBtn.innerHTML = "Back";
     if (gameManager.status == "Paused") {
         gameMenu.style.display = "none";
         pauseBtn.style.display = "none";
@@ -329,6 +384,7 @@ function hideOptions() {
         gameMenu.style.display = "block";
         pauseBtn.style.display = "block";
         restartBtn.style.display = "block";
+        startBtn.style.display = "none";
     }
     else if (gameManager.status == "Unstarted" && gameManager.isMobile) {
         gameMenu.style.display = "block";
@@ -342,7 +398,6 @@ function hideOptions() {
     optionsMenu.style.display = "none";
 }
 function loadOptions() {
-    const gridCheck = document.getElementById("grid-check-box");
     gridCheck.addEventListener('change', () => {
         if (gridCheck.checked) {
             showGrid();
@@ -351,43 +406,59 @@ function loadOptions() {
             hideGrid();
         }
     });
+    survivalCheck.addEventListener('change', handleSurvival);
     if (gameManager.isMobile) {
-        const rotCheck = document.getElementById("use-rot-check-box");
-        rotCheck.addEventListener('change', () => {
-            if (rotCheck.checked) {
+        rotBtnsCheck.addEventListener('change', () => {
+            if (rotBtnsCheck.checked) {
                 handleBtns(true, "rotate");
             }
             else {
                 handleBtns(false, "rotate");
             }
         });
-        const movementCheck = document.getElementById("use-mov-check-box");
-        movementCheck.addEventListener('change', () => {
-            if (movementCheck.checked) {
+        mvmntBtnsCheck.addEventListener('change', () => {
+            if (mvmntBtnsCheck.checked) {
                 handleBtns(true, "movement");
             }
             else {
                 handleBtns(false, "movement");
             }
         });
-        const hardCheck = document.getElementById("use-hard-drop-check-box");
-        hardCheck.addEventListener('change', () => {
-            if (hardCheck.checked) {
+        hardDropBtnCheck.addEventListener('change', () => {
+            if (hardDropBtnCheck.checked) {
                 handleBtns(true, "hardDrop");
             }
             else {
                 handleBtns(false, "hardDrop");
             }
         });
-        const transparentCheck = document.getElementById("transparent-check-box");
-        transparentCheck.addEventListener('change', () => {
-            if (transparentCheck.checked) {
+        transparentBtnsCheck.addEventListener('change', () => {
+            if (transparentBtnsCheck.checked) {
                 handleBtns(true, "transparent");
             }
             else {
                 handleBtns(false, "transparent");
             }
         });
+    }
+}
+function handleSurvival() {
+    if (survivalCheck.checked) {
+        gameManager.isSurvival = true;
+    }
+    else {
+        gameManager.isSurvival = false;
+    }
+    toggleRestartBackBtn();
+}
+function toggleRestartBackBtn() {
+    if (backBtn.innerHTML == "Back") {
+        backBtn.innerHTML = "Restart";
+        backBtn.addEventListener("click", restartGame);
+    }
+    else {
+        backBtn.removeEventListener("click", restartGame);
+        backBtn.innerHTML = "Back";
     }
 }
 function showGrid() {
@@ -484,25 +555,33 @@ function addScore() {
     switch (linesCleared) {
         case 0:
             comboNum = 0;
+            if (comboDisplayMob)
+                comboDisplayMob.innerHTML = "";
+            if (comboDisplay)
+                comboDisplay.innerHTML = "";
             return;
         case 1:
-            gameManager.score += singleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (singleScore + comboNum) * gameManager.level;
             break;
         case 2:
-            gameManager.score += doubleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (doubleScore + comboNum) * gameManager.level;
             comboText = "Double!";
             break;
         case 3:
-            gameManager.score += tripleScore;
             comboNum++;
+            backToBackNum = 0;
+            gameManager.score += (tripleScore + comboNum) * gameManager.level;
             comboText = "Triple!";
             break;
         case 4:
-            gameManager.score += tetrisScore;
             comboNum++;
-            comboText = "Tetris!";
+            backToBackNum++;
+            gameManager.score += (tetrisScore + comboNum + backToBackNum) * gameManager.level;
+            comboText = backToBackNum > 1 ? "Back To Back Tetris!" : "Tetris!";
             break;
     }
     gameManager.lines += linesCleared;
@@ -511,9 +590,6 @@ function addScore() {
             comboDisplayMob.innerHTML = `x${comboNum} ${comboText}`;
             setTimeout(comboDisplayReset, 3000);
         }
-        if (comboNum == 0) {
-            comboDisplayMob.innerHTML = "";
-        }
         if (linesDisplayMob) {
             linesDisplayMob.innerHTML = gameManager.lines.toString();
         }
@@ -521,28 +597,53 @@ function addScore() {
             scoreDisplayMob.innerHTML = gameManager.score.toString();
         }
         if (!gameManager.isSurvival) {
-            if (gameManager.lines > 0) {
-                gameManager.level = Math.ceil(gameManager.lines / 10);
-            }
-            else {
-                gameManager.level = 1;
-            }
+            levelUpdate();
             if (levelDisplayMob) {
                 levelDisplayMob.innerHTML = gameManager.level.toString();
             }
         }
     }
     scoreDisplay.innerHTML = gameManager.score.toString();
-    lines.innerHTML = gameManager.lines.toString();
+    linesDisplay.innerHTML = gameManager.lines.toString();
+    if ((comboText != "" || comboNum > 1) && comboDisplay) {
+        comboDisplay.innerHTML = `x${comboNum} ${comboText}`;
+        setTimeout(comboDisplayReset, 3000);
+    }
+    if (!gameManager.isSurvival) {
+        levelUpdate();
+        if (levelDisplay) {
+            levelDisplay.innerHTML = gameManager.level.toString();
+        }
+    }
+}
+function levelUpdate() {
+    let newLevel = 1;
+    let intervalValue = 1000;
+    if (gameManager.lines > 0) {
+        newLevel = Math.ceil(gameManager.lines / 10);
+        gameManager.level = newLevel;
+    }
+    if (gameManager.level && gameManager.level == 1) {
+        clearInterval(timerId);
+        timerId = setInterval(moveDown, intervalValue);
+        return;
+    }
+    if (gameManager.level) {
+        intervalValue = Math.max((-30 * (newLevel)) + 1030, 100);
+        clearInterval(timerId);
+        timerId = setInterval(moveDown, intervalValue);
+    }
 }
 function comboDisplayReset() {
+    let comboNumTxt = "";
+    if (comboNum >= 1) {
+        comboNumTxt = `x${comboNum}`;
+    }
     if (comboDisplayMob) {
-        if (comboNum > 1) {
-            comboDisplayMob.innerHTML = `x${comboNum}`;
-        }
-        else {
-            comboDisplayMob.innerHTML = "";
-        }
+        comboDisplayMob.innerHTML = comboNumTxt;
+    }
+    if (comboDisplay) {
+        comboDisplay.innerHTML = comboNumTxt;
     }
 }
 function gameOver() {
@@ -921,12 +1022,18 @@ function moveDown() {
 }
 function softDrop() {
     clearInterval(timerId);
+    timerId = undefined;
     while (!curr.some(index => squares[currPos + index + width].classList.contains('taken'))) {
         undraw();
         currPos += width;
         draw();
     }
-    timerId = setInterval(moveDown, 500);
+    if (gameManager.isSurvival) {
+        timerId = setInterval(moveDown, 500);
+    }
+    else {
+        levelUpdate();
+    }
 }
 function hardDrop() {
     while (!freeze()) {
@@ -978,180 +1085,219 @@ function moveRight() {
     draw();
 }
 function rotateCW() {
+    if (currPiece == 2) {
+        return;
+    }
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+    let newRot = currRot;
+    let newPos = currPos;
     if (!rightEdge && !leftEdge) {
-        currRot++;
+        newRot++;
     }
     else if (rightEdge) {
-        switch (currPiece) {
-            case 0:
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-            case 1:
-                currRot++;
-                break;
-            case 2:
-                draw();
-                return;
-            case 3:
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 4:
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-            case 5:
-                currRot++;
-                break;
-            case 6:
-                if (currRot != 1) {
-                    currRot++;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCWRightEdge();
     }
     else if (leftEdge) {
-        switch (currPiece) {
-            case 0:
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-            case 1:
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 2:
-                draw();
-                return;
-            case 3:
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 4:
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-            case 5:
-                if (currRot == 0 || currRot == 2) {
-                    currRot++;
-                }
-                break;
-            case 6:
-                if (currRot != 3) {
-                    currRot++;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCWLeftEdge();
     }
-    if (currRot === curr.length) {
-        currRot = 0;
+    if (newRot === curr.length) {
+        newRot = 0;
+    }
+    let rotatedCurr = tetrominos[currPiece][newRot];
+    const check = rotatedCurr.some(index => squares[newPos + index].classList.contains('taken'));
+    if (!check) {
+        currRot = newRot;
+        currPos = newPos;
     }
     curr = tetrominos[currPiece][currRot];
-    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
-    if (check) {
-        currRot--;
-        curr = tetrominos[currPiece][currRot];
-    }
     draw();
 }
 function rotateCCW() {
+    if (currPiece == 2) {
+        return;
+    }
     undraw();
     const rightEdge = curr.some(index => (currPos + index) % width === width - 1);
     const leftEdge = curr.some(index => (currPos + index) % width === 0);
+    let newRot = currRot;
+    let newPos = currPos;
     if (!rightEdge && !leftEdge) {
-        currRot--;
+        newRot--;
     }
     else if (rightEdge) {
-        switch (currPiece) {
-            case 0:
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-            case 1:
-                currRot--;
-                break;
-            case 2:
-                draw();
-                return;
-            case 3:
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 4:
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-            case 5:
-                currRot--;
-                break;
-            case 6:
-                if (currRot != 1) {
-                    currRot--;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCCWRightEdge();
     }
     else if (leftEdge) {
-        switch (currPiece) {
-            case 0:
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-            case 1:
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 2:
-                draw();
-                return;
-            case 3:
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 4:
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-            case 5:
-                if (currRot == 0 || currRot == 2) {
-                    currRot--;
-                }
-                break;
-            case 6:
-                if (currRot != 3) {
-                    currRot--;
-                }
-                break;
-        }
+        [newRot, newPos] = preciseRotationCCWLeftEdge();
     }
-    if (currRot < 0) {
-        currRot = 3;
+    if (newRot < 0) {
+        newRot = 3;
+    }
+    let rotatedCurr = tetrominos[currPiece][newRot];
+    const check = rotatedCurr.some(index => squares[newPos + index].classList.contains('taken'));
+    if (!check) {
+        currRot = newRot;
+        currPos = newPos;
     }
     curr = tetrominos[currPiece][currRot];
-    const check = curr.some(index => squares[currPos + index].classList.contains('taken'));
-    if (check) {
-        currRot++;
-        curr = tetrominos[currPiece][currRot];
-    }
     draw();
+}
+function preciseRotationCCWRightEdge() {
+    let newRot = currRot;
+    let newPos = currPos;
+    switch (currPiece) {
+        case 0:
+            if (currRot == 1) {
+                newPos -= 2;
+            }
+            break;
+        case 1:
+            break;
+        case 3:
+            if (currRot == 1) {
+                newPos--;
+            }
+            else if (currRot == 3) {
+                newPos -= 2;
+            }
+            break;
+        case 4:
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 5:
+            break;
+        case 6:
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+    }
+    newRot--;
+    if (newRot < 0) {
+        newRot = 3;
+    }
+    return [newRot, newPos];
+}
+function preciseRotationCCWLeftEdge() {
+    let newRot = currRot;
+    let newPos = currPos;
+    switch (currPiece) {
+        case 0:
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 1:
+            if (newRot == 1 || newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 3:
+            if (newRot == 1) {
+                newPos += 2;
+            }
+            else if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 4:
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 5:
+            if (newRot == 1 || newRot == 3) {
+                newPos++;
+            }
+            break;
+        case 6:
+            if (newRot == 3) {
+                newPos++;
+            }
+            break;
+    }
+    newRot--;
+    return [newRot, newPos];
+}
+function preciseRotationCWRightEdge() {
+    let newRot = currRot;
+    let newPos = currPos;
+    switch (currPiece) {
+        case 0:
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 1:
+            break;
+        case 3:
+            if (currRot == 1) {
+                newPos--;
+            }
+            else if (currRot == 3) {
+                newPos -= 2;
+            }
+            break;
+        case 4:
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+        case 5:
+            break;
+        case 6:
+            if (currRot == 1) {
+                newPos--;
+            }
+            break;
+    }
+    newRot++;
+    return [newRot, newPos];
+}
+function preciseRotationCWLeftEdge() {
+    let newRot = currRot;
+    let newPos = currPos;
+    switch (currPiece) {
+        case 0:
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 1:
+            if (currRot == 1 || currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 3:
+            if (currRot == 1) {
+                newPos += 2;
+            }
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 4:
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 5:
+            if (currRot == 1 || currRot == 3) {
+                newPos++;
+            }
+            break;
+        case 6:
+            if (currRot == 3) {
+                newPos++;
+            }
+            break;
+    }
+    newRot++;
+    return [newRot, newPos];
 }
 function controlDown(e) {
     e.preventDefault();
