@@ -359,3 +359,165 @@ html{
     background: rgba(0, 0, 0, 0.6);
     color: magenta;
 }
+
+/* colors */
+
+/* #5194cc #e6e6fa #e15454 */
+.colorSet-0-1 {
+    background-color: #5194cc;
+    border-color: #5194cc;
+}
+
+.colorSet-0-2 {
+    background-color: #e6e6fa;
+    border-color: #e6e6fa;
+}
+
+.colorSet-0-3 {
+    background-color: #e15454;
+    border-color: #e15454;
+}
+
+/* #6a5acd	#e6e6fa	#98fb98 */
+.colorSet-1-1 {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+}
+
+.colorSet-1-2 {
+    background-color: #e6e6fa;
+    border-color: #e6e6fa;
+}
+
+.colorSet-1-3 {
+    background-color: #98fb98;
+    border-color: #98fb98;
+}
+
+/* #20b2aa #fff0f5 #f49883 */
+.colorSet-2-1 {
+    background-color: #20b2aa;
+    border-color: #20b2aa;
+}
+
+.colorSet-2-2 {
+    background-color: #fff0f5;
+    border-color: #fff0f5;
+}
+
+.colorSet-2-3 {
+    background-color: #f49883;
+    border-color: #f49883;
+}
+
+/* #00ced1	#e6e6fa	#6a5acd */
+.colorSet-3-1 {
+    background-color: #00ced1;
+    border-color: #00ced1;
+}
+
+.colorSet-3-2 {
+    background-color: #e6e6fa;
+    border-color: #e6e6fa;
+}
+
+.colorSet-3-3 {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+}
+
+/* #9370db	#f0f8ff	#b0e0e6 */
+.colorSet-4-1 {
+    background-color: #9370db;
+    border-color: #9370db;
+}
+
+.colorSet-4-2 {
+    background-color: #f0f8ff;
+    border-color: #f0f8ff;
+}
+
+.colorSet-4-3 {
+    background-color: #b0e0e6;
+    border-color: #b0e0e6;
+}
+
+/* #5f9ea0	#f0fff0	#d8bfd8 */
+.colorSet-5-1 {
+    background-color: #5f9ea0;
+    border-color: #5f9ea0;
+}
+
+.colorSet-5-2 {
+    background-color: #f0fff0;
+    border-color: #f0fff0;
+}
+
+.colorSet-5-3 {
+    background-color: #d8bfd8;
+    border-color: #d8bfd8;
+}
+
+/* #7fffd4	#fffacd	#8a2be2 */
+.colorSet-6-1 {
+    background-color: #7fffd4;
+    border-color: #7fffd4;
+}
+
+.colorSet-6-2 {
+    background-color: #fffacd;
+    border-color: #fffacd;
+}
+
+.colorSet-6-3 {
+    background-color: #8a2be2;
+    border-color: #8a2be2;
+}
+
+/* #feac4e	#e6e6fa	#e44537 */
+.colorSet-7-1 {
+    background-color: #feac4e;
+    border-color: #feac4e;
+}
+
+.colorSet-7-2 {
+    background-color: #e6e6fa;
+    border-color: #e6e6fa;
+}
+
+.colorSet-7-3 {
+    background-color: #e44537;
+    border-color: #e44537;
+}
+
+/* #3cb371 #fff0f5 #add8e6 */
+.colorSet-8-1 {
+    background-color: #3cb371;
+    border-color: #3cb371;
+}
+
+.colorSet-8-2 {
+    background-color: #fff0f5;
+    border-color: #fff0f5;
+}
+
+.colorSet-8-3 {
+    background-color: #add8e6;
+    border-color: #add8e6;
+}
+
+/* #66cdaa #f0f8ff #87cefa */
+.colorSet-9-1 {
+    background-color: #66cdaa;
+    border-color: #66cdaa;
+}
+
+.colorSet-9-2 {
+    background-color: #f0f8ff;
+    border-color: #f0f8ff;
+}
+
+.colorSet-9-3 {
+    background-color: #87cefa;
+    border-color: #87cefa;
+}

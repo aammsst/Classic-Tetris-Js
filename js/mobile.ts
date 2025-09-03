@@ -217,15 +217,35 @@ function displayShapeMob() {
         return;
     }
 
-    displaySqMob.forEach(square => {
-        square.classList.remove('tetrominos');
-        square.style.backgroundColor = '';
-        square.style.borderColor = '';
-    })
+    // undraw current piece
+    resetDisplayShapeMob();
+
+    // draw next piece
+    let nextColor: string;
+    switch (nextPiece) {
+        case 0:
+        case 1:
+            nextColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            nextColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            nextColor = colorSet + 3;
+            break;
+    }
+
     upNextTetrominoes[nextPiece].forEach(index => {
-        displaySqMob[displayIndex + index].classList.add('tetrominos');
-        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextPiece];
-        displaySqMob[displayIndex + index].style.borderColor = colors[nextPiece];
+        displaySqMob[displayIndex + index].classList.add('tetrominos', nextColor);
+    })
+}
+
+function resetDisplayShapeMob() {
+    displaySqMob.forEach(square => {
+        square.classList.remove('tetrominos', colorSet + 1, colorSet + 2, colorSet + 3);
     })
 }
 

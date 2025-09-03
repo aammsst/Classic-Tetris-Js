@@ -351,12 +351,14 @@ function restartGame() {
     if (mobInstr) {
         mobInstr.style.display = "flex";
     }
-    pauseBtn!.innerText = "Puase";
-    for(let i = 0; i < 250; i++) {
-        squares[i].classList.remove("tetrominos","taken");
-        squares[i].style.backgroundColor = '';
-        squares[i].style.borderColor = '';
+    for (let i = 0; i < 250; i++) {
+        squares[i].classList.remove("tetrominos","taken", colorSet+1, colorSet+2, colorSet+3);
     }
+    if (gameManager.isMobile) {
+        resetDisplayShapeMob();
+    }
+    resetDisplayShape();
+    pauseBtn!.innerText = "Puase";
     pauseBtn!.style.display = "block";
     if (gameManager.isMobile) {
         grid?.addEventListener("touchstart",mobileMoveStart)
@@ -648,8 +650,8 @@ function addScore() {
             // removing lines
             row.forEach( index => {
                 squares[index].classList.remove('taken','tetrominos');
-                squares[index].style.backgroundColor = '';
-                squares[index].style.borderColor = '';
+                squares[index].classList.remove(colorSet + 1, colorSet + 2, colorSet + 3);
+                squares[index].classList.add('colorSet-Transparent');
             });
 
             // adding new lines at the top
@@ -712,6 +714,7 @@ function addScore() {
             linesToLevelUp -= 10;
             gameManager.level++;
             levelUpdate();
+            colorUpdate();
             if (levelDisplay) {
                 levelDisplay.innerHTML = gameManager.level.toString();
             }
@@ -746,6 +749,24 @@ function levelUpdate() {
     let intervalValue = Math.max((-32 * (gameManager.level)) + 1032, 70);
     clearInterval(timerId);
     timerId = setInterval(moveDown, intervalValue);
+}
+
+function colorUpdate() {
+    colorNum++;
+    if (colorNum > 9) {
+        colorNum = 0;
+    }
+
+    const newColorSet = "colorSet-" + colorNum + "-";
+
+    for (let i = 1; i<4; i++) {
+        let pieces = Array.from(document.getElementsByClassName(colorSet + i)); 
+        pieces.forEach(index => {
+            index.classList.replace(colorSet + i, newColorSet + i);
+        })
+    }
+
+    colorSet = newColorSet;
 }
 
 function comboDisplayReset() {

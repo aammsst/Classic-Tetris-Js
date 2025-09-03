@@ -271,12 +271,14 @@ function restartGame() {
     if (mobInstr) {
         mobInstr.style.display = "flex";
     }
-    pauseBtn.innerText = "Puase";
     for (let i = 0; i < 250; i++) {
-        squares[i].classList.remove("tetrominos", "taken");
-        squares[i].style.backgroundColor = '';
-        squares[i].style.borderColor = '';
+        squares[i].classList.remove("tetrominos", "taken", colorSet + 1, colorSet + 2, colorSet + 3);
     }
+    if (gameManager.isMobile) {
+        resetDisplayShapeMob();
+    }
+    resetDisplayShape();
+    pauseBtn.innerText = "Puase";
     pauseBtn.style.display = "block";
     if (gameManager.isMobile) {
         grid === null || grid === void 0 ? void 0 : grid.addEventListener("touchstart", mobileMoveStart);
@@ -544,8 +546,8 @@ function addScore() {
             linesCleared++;
             row.forEach(index => {
                 squares[index].classList.remove('taken', 'tetrominos');
-                squares[index].style.backgroundColor = '';
-                squares[index].style.borderColor = '';
+                squares[index].classList.remove(colorSet + 1, colorSet + 2, colorSet + 3);
+                squares[index].classList.add('colorSet-Transparent');
             });
             const squaresRemoved = squares.splice(rowIndex, width);
             squares = squaresRemoved.concat(squares);
@@ -598,6 +600,7 @@ function addScore() {
             linesToLevelUp -= 10;
             gameManager.level++;
             levelUpdate();
+            colorUpdate();
             if (levelDisplay) {
                 levelDisplay.innerHTML = gameManager.level.toString();
             }
@@ -622,6 +625,20 @@ function levelUpdate() {
     let intervalValue = Math.max((-32 * (gameManager.level)) + 1032, 70);
     clearInterval(timerId);
     timerId = setInterval(moveDown, intervalValue);
+}
+function colorUpdate() {
+    colorNum++;
+    if (colorNum > 9) {
+        colorNum = 0;
+    }
+    const newColorSet = "colorSet-" + colorNum + "-";
+    for (let i = 1; i < 4; i++) {
+        let pieces = Array.from(document.getElementsByClassName(colorSet + i));
+        pieces.forEach(index => {
+            index.classList.replace(colorSet + i, newColorSet + i);
+        });
+    }
+    colorSet = newColorSet;
 }
 function comboDisplayReset() {
     let comboNumTxt = "";
@@ -839,15 +856,30 @@ function displayShapeMob() {
     if (gameManager.status != "Started") {
         return;
     }
-    displaySqMob.forEach(square => {
-        square.classList.remove('tetrominos');
-        square.style.backgroundColor = '';
-        square.style.borderColor = '';
-    });
+    resetDisplayShapeMob();
+    let nextColor;
+    switch (nextPiece) {
+        case 0:
+        case 1:
+            nextColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            nextColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            nextColor = colorSet + 3;
+            break;
+    }
     upNextTetrominoes[nextPiece].forEach(index => {
-        displaySqMob[displayIndex + index].classList.add('tetrominos');
-        displaySqMob[displayIndex + index].style.backgroundColor = colors[nextPiece];
-        displaySqMob[displayIndex + index].style.borderColor = colors[nextPiece];
+        displaySqMob[displayIndex + index].classList.add('tetrominos', nextColor);
+    });
+}
+function resetDisplayShapeMob() {
+    displaySqMob.forEach(square => {
+        square.classList.remove('tetrominos', colorSet + 1, colorSet + 2, colorSet + 3);
     });
 }
 function mobileEvents() {
@@ -872,15 +904,6 @@ function mobileEvents() {
 }
 let timerId;
 let isDrawn = false;
-const colors = [
-    '#feac4e',
-    '#feac4e',
-    '#ccc',
-    '#ccc',
-    '#ccc',
-    '#e44537',
-    '#e44537'
-];
 const width = 10;
 const lTetromino = [
     [width + 1, width + 2, width + 3, width * 2 + 1],
@@ -943,6 +966,8 @@ let currBatch = new Array(7);
 let currPiece;
 let nextPiece;
 let curr;
+let colorSet = "colorSet-0-";
+let colorNum = 0;
 function getBatch(lastIdx = -1) {
     let random;
     const set = new Set();
@@ -982,20 +1007,50 @@ function reset() {
     currIdx = 0;
     currPiece = currBatch[currIdx];
     curr = tetrominos[currPiece][currRot];
+    colorSet = "colorSet-0-";
+    colorNum = 0;
 }
 function draw() {
+    let currColor;
+    switch (currPiece) {
+        case 0:
+        case 1:
+            currColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            currColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            currColor = colorSet + 3;
+            break;
+    }
     curr.forEach(index => {
-        squares[currPos + index].classList.add('tetrominos');
-        squares[currPos + index].style.backgroundColor = colors[currPiece];
-        squares[currPos + index].style.borderColor = colors[currPiece];
+        squares[currPos + index].classList.add('tetrominos', currColor);
     });
     isDrawn = true;
 }
 function undraw() {
+    let currColor;
+    switch (currPiece) {
+        case 0:
+        case 1:
+            currColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            currColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            currColor = colorSet + 3;
+            break;
+    }
     curr.forEach(index => {
-        squares[currPos + index].style.backgroundColor = '';
-        squares[currPos + index].style.borderColor = '';
-        squares[currPos + index].classList.remove('tetrominos');
+        squares[currPos + index].classList.remove('tetrominos', currColor);
     });
     isDrawn = false;
 }
@@ -1324,15 +1379,30 @@ const upNextTetrominoes = [
     [displayWidth + 1, displayWidth + 2, displayWidth + 3, displayWidth * 2 + 3]
 ];
 function displayShape() {
-    displaySq.forEach(square => {
-        square.classList.remove('tetrominos');
-        square.style.backgroundColor = '';
-        square.style.borderColor = '';
-    });
+    resetDisplayShape();
+    let nextColor;
+    switch (nextPiece) {
+        case 0:
+        case 1:
+            nextColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            nextColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            nextColor = colorSet + 3;
+            break;
+    }
     upNextTetrominoes[nextPiece].forEach(index => {
-        displaySq[displayIndex + index].classList.add('tetrominos');
-        displaySq[displayIndex + index].style.backgroundColor = colors[nextPiece];
-        displaySq[displayIndex + index].style.borderColor = colors[nextPiece];
+        displaySq[displayIndex + index].classList.add('tetrominos', nextColor);
     });
 }
 ;
+function resetDisplayShape() {
+    displaySq.forEach(square => {
+        square.classList.remove('tetrominos', colorSet + 1, colorSet + 2, colorSet + 3);
+    });
+}

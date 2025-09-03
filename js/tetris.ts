@@ -1,16 +1,6 @@
 let timerId: number | undefined;
 let isDrawn = false;
 
-const colors = [
-	'#feac4e',
-	'#feac4e',
-	'#ccc',
-	'#ccc',
-	'#ccc',
-	'#e44537',
-	'#e44537'
-];
-
 const width = 10;
 
     // tetrominos {{{
@@ -174,6 +164,8 @@ let currBatch: number[] = new Array(7);
 let currPiece: number;
 let nextPiece: number;
 let curr: number[];
+let colorSet: string = "colorSet-0-";
+let colorNum: number = 0;
 
 // gen random {{{
 function getBatch(lastIdx = -1): number[] {
@@ -232,24 +224,54 @@ function reset() {
     currIdx = 0;
     currPiece = currBatch[currIdx];
     curr = tetrominos[currPiece][currRot];
+    colorSet = "colorSet-0-";
+    colorNum = 0;
 }
 
 // drawing tetrominos
 function draw() {
+    let currColor: string;
+    switch (currPiece) {
+        case 0:
+        case 1:
+            currColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            currColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            currColor = colorSet + 3;
+            break;
+    }
     curr.forEach(index => {
-        squares[currPos + index].classList.add('tetrominos');
-        squares[currPos + index].style.backgroundColor = colors[currPiece];
-        squares[currPos + index].style.borderColor = colors[currPiece];
+        squares[currPos + index].classList.add('tetrominos', currColor);
     })
     isDrawn = true;
 }
 
 // undrawing tetrominos
 function undraw() {
+    let currColor: string;
+    switch (currPiece) {
+        case 0:
+        case 1:
+            currColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            currColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            currColor = colorSet + 3;
+            break;
+    }
     curr.forEach(index => {
-        squares[currPos + index].style.backgroundColor = '';
-        squares[currPos + index].style.borderColor = '';
-        squares[currPos + index].classList.remove('tetrominos');
+        squares[currPos + index].classList.remove('tetrominos', currColor);
     })
     isDrawn = false;
 }
@@ -665,15 +687,35 @@ const upNextTetrominoes = [
 
 // display the shape in mini-grid
 function displayShape() {
-    displaySq.forEach(square => {
-        square.classList.remove('tetrominos');
-        square.style.backgroundColor = '';
-        square.style.borderColor = '';
-    });
+
+    // undraw current piece
+    resetDisplayShape();
+
+    // draw next piece
+    let nextColor: string;
+    switch (nextPiece) {
+        case 0:
+        case 1:
+            nextColor = colorSet + 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            nextColor = colorSet + 2;
+            break;
+        case 5:
+        case 6:
+            nextColor = colorSet + 3;
+            break;
+    }
     upNextTetrominoes[nextPiece].forEach(index => {
-        displaySq[displayIndex + index].classList.add('tetrominos');
-        displaySq[displayIndex + index].style.backgroundColor = colors[nextPiece];
-        displaySq[displayIndex + index].style.borderColor = colors[nextPiece];
+        displaySq[displayIndex + index].classList.add('tetrominos', nextColor);
     });
 };
+
+function resetDisplayShape() {
+    displaySq.forEach(square => {
+        square.classList.remove('tetrominos', colorSet + 1, colorSet + 2, colorSet + 3);
+    })
+}
 // }}}
