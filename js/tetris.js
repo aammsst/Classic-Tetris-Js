@@ -52,6 +52,7 @@ const singleScore = 10;
 const doubleScore = 25;
 const tripleScore = 40;
 const tetrisScore = 80;
+let linesToLevelUp = 0;
 let comboNum = 0;
 let backToBackNum = 0;
 let gameManager = {
@@ -584,25 +585,8 @@ function addScore() {
             comboText = backToBackNum > 1 ? "Back To Back Tetris!" : "Tetris!";
             break;
     }
+    linesToLevelUp += linesCleared;
     gameManager.lines += linesCleared;
-    if (gameManager.isMobile) {
-        if ((comboText != "" || comboNum > 1) && comboDisplayMob) {
-            comboDisplayMob.innerHTML = `x${comboNum} ${comboText}`;
-            setTimeout(comboDisplayReset, 3000);
-        }
-        if (linesDisplayMob) {
-            linesDisplayMob.innerHTML = gameManager.lines.toString();
-        }
-        if (scoreDisplayMob) {
-            scoreDisplayMob.innerHTML = gameManager.score.toString();
-        }
-        if (!gameManager.isSurvival) {
-            levelUpdate();
-            if (levelDisplayMob) {
-                levelDisplayMob.innerHTML = gameManager.level.toString();
-            }
-        }
-    }
     scoreDisplay.innerHTML = gameManager.score.toString();
     linesDisplay.innerHTML = gameManager.lines.toString();
     if ((comboText != "" || comboNum > 1) && comboDisplay) {
@@ -610,29 +594,34 @@ function addScore() {
         setTimeout(comboDisplayReset, 3000);
     }
     if (!gameManager.isSurvival) {
-        levelUpdate();
-        if (levelDisplay) {
-            levelDisplay.innerHTML = gameManager.level.toString();
+        if (linesToLevelUp >= 10) {
+            linesToLevelUp -= 10;
+            gameManager.level++;
+            levelUpdate();
+            if (levelDisplay) {
+                levelDisplay.innerHTML = gameManager.level.toString();
+            }
+        }
+    }
+    if (gameManager.isMobile) {
+        if (comboDisplayMob && comboDisplay) {
+            comboDisplayMob.innerHTML = comboDisplay.innerHTML;
+        }
+        if (linesDisplayMob) {
+            linesDisplayMob.innerHTML = gameManager.lines.toString();
+        }
+        if (scoreDisplayMob) {
+            scoreDisplayMob.innerHTML = gameManager.score.toString();
+        }
+        if (!gameManager.isSurvival && levelDisplayMob) {
+            levelDisplayMob.innerHTML = gameManager.level.toString();
         }
     }
 }
 function levelUpdate() {
-    let newLevel = 1;
-    let intervalValue = 1000;
-    if (gameManager.lines > 0) {
-        newLevel = Math.ceil(gameManager.lines / 10);
-        gameManager.level = newLevel;
-    }
-    if (gameManager.level && gameManager.level == 1) {
-        clearInterval(timerId);
-        timerId = setInterval(moveDown, intervalValue);
-        return;
-    }
-    if (gameManager.level) {
-        intervalValue = Math.max((-30 * (newLevel)) + 1030, 100);
-        clearInterval(timerId);
-        timerId = setInterval(moveDown, intervalValue);
-    }
+    let intervalValue = Math.max((-32 * (gameManager.level)) + 1032, 70);
+    clearInterval(timerId);
+    timerId = setInterval(moveDown, intervalValue);
 }
 function comboDisplayReset() {
     let comboNumTxt = "";
