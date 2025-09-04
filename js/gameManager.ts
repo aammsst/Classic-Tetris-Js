@@ -62,9 +62,9 @@ const dasSlow = 500;
 let dasTimeout: number;
 
 const singleScore = 10;
-const doubleScore = 25;
-const tripleScore = 40;
-const tetrisScore = 80;
+const doubleScore = 50;
+const tripleScore = 100;
+const tetrisScore = 1000;
 let linesToLevelUp = 0;
 
 let comboNum = 0;
@@ -676,24 +676,24 @@ function addScore() {
         case 1:
             comboNum++;
             backToBackNum = 0;
-            gameManager.score += (singleScore + comboNum) * gameManager.level;
+            gameManager.score += (gameManager.level + comboNum) * singleScore;
             break;
         case 2:
             comboNum++;
             backToBackNum = 0;
-            gameManager.score += (doubleScore + comboNum) * gameManager.level;
+            gameManager.score += (gameManager.level + comboNum) * doubleScore;
             comboText = "Double!";
             break;
         case 3:
             comboNum++;
             backToBackNum = 0;
-            gameManager.score += (tripleScore + comboNum) * gameManager.level;
+            gameManager.score += (gameManager.level + comboNum) * tripleScore;
             comboText = "Triple!";
             break
         case 4:
             comboNum++;
             backToBackNum++;
-            gameManager.score += (tetrisScore + comboNum + backToBackNum) * gameManager.level;
+            gameManager.score += (gameManager.level + comboNum + (backToBackNum * 3)) * tetrisScore;
             comboText = backToBackNum > 1 ? "Back To Back Tetris!" : "Tetris!";
             triggerTetrisAnim();
             break;
