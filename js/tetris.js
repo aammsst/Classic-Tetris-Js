@@ -13,6 +13,8 @@ let linesDisplay;
 let levelDisplay;
 let levelDisplayCont;
 let comboDisplay;
+let conteiner;
+let conteinerMob;
 let startBtn;
 let optionsBtn;
 let backBtn;
@@ -70,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     optionsTxt = document.getElementById("optionsTxt");
     grid = document.querySelector(".grid");
     squares = Array.from(document.querySelectorAll(".grid div"));
+    conteiner = document.querySelector(".conteiner");
     scoreDisplay = document.getElementById("score");
     linesDisplay = document.getElementById("lines");
     lastScore = document.createElement("H2");
@@ -94,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let mobOptions = document.getElementById("mobOptions");
         mobOptions.style.display = "block";
         gameManager.isMobile = true;
+        conteinerMob = document.getElementById("gridContainer");
         btns.classList.add("mobBtns");
         btns.innerHTML += `
             <button id="start-button" type="button" class="btn">Start</button>
@@ -105,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         optionsBtns.innerHTML += `
             <button id="back-button" type="button" class="btn">Back</button>
         `;
-        optionsMenu.appendChild(optionsBtns);
         gameMenu.appendChild(btns);
+        optionsMenu.appendChild(optionsBtns);
         startBtn = document.getElementById("start-button");
         optionsBtn = document.getElementById("options-button");
         backBtn = document.getElementById("back-button");
@@ -585,6 +589,7 @@ function addScore() {
             backToBackNum++;
             gameManager.score += (tetrisScore + comboNum + backToBackNum) * gameManager.level;
             comboText = backToBackNum > 1 ? "Back To Back Tetris!" : "Tetris!";
+            triggerTetrisAnim();
             break;
     }
     linesToLevelUp += linesCleared;
@@ -650,6 +655,27 @@ function comboDisplayReset() {
     }
     if (comboDisplay) {
         comboDisplay.innerHTML = comboNumTxt;
+    }
+}
+function triggerTetrisAnim() {
+    if (gameManager.isMobile) {
+        if (conteinerMob) {
+            conteinerMob.classList.add("on-Tetris-Anim-FS");
+        }
+    }
+    else {
+        conteiner.classList.add("on-Tetris-Anim");
+    }
+    setTimeout(removeAnim, 400);
+}
+function removeAnim() {
+    if (gameManager.isMobile) {
+        if (conteinerMob) {
+            conteinerMob.classList.remove("on-Tetris-Anim-FS");
+        }
+    }
+    else {
+        conteiner.classList.remove("on-Tetris-Anim");
     }
 }
 function gameOver() {
